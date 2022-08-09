@@ -156,14 +156,14 @@ module.exports = {
   }, vipPage: async (query, user) => {
     try {
       if (!query.data) return;
+      const settings = await DefaultSettings.findOne();
       if (user.hasFreeTrial && query.data === "try-free") {
-        const settings = await DefaultSettings.findOne();
         await Users.findOneAndUpdate({"user.id": user.user.id}, {vip: true, trialSearches: settings.freeTrialSearches, hasFreeTrial: false, "state.on": "home"});
         return query.edit({text: `Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
       }
       if (!user.hasFreeTrial && query.data === "subscribe") {
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "choose-vip-plan"});
-        return query.edit({text: `Выберите тарифный план`, inline_keyboard: [[{text: `24 часа 79р`, callback_data: "24h"}], [{text: `7 дней 149р`, callback_data: "7d"}], [{text: `1 месяц 179р`, callback_data: "1M"}], [{text: `Навсегда 499р`, callback_data: "forever"}]]});
+        return query.edit({text: `Выберите тарифный план`, inline_keyboard: [[{text: `24 часа ${settings.vipDailyPrice}р`, callback_data: "24h"}], [{text: `7 дней ${settings.vipWeeklyPrice}р`, callback_data: "7d"}], [{text: `1 месяц ${settings.vipMonthlyPrice}р`, callback_data: "1M"}], [{text: `Навсегда ${settings.vipForeverPrice}р`, callback_data: "forever"}]]});
       }
     } catch (e) {
       console.log(e);
@@ -171,14 +171,14 @@ module.exports = {
   }, chatVipPage: async (query, user) => {
     try {
       if (!query.data) return;
+      const settings = await DefaultSettings.findOne();
       if (user.hasFreeTrial && query.data === "try-free") {
-        const settings = await DefaultSettings.findOne();
         await Users.findOneAndUpdate({"user.id": user.user.id}, {vip: true, trialSearches: settings.freeTrialSearches, hasFreeTrial: false, "state.on": "chat"});
         return query.edit({text: `Можете продолжать общение в чате:`});
       }
       if (!user.hasFreeTrial && query.data === "subscribe") {
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "choose-chat-vip-plan"});
-        return query.edit({text: `Выберите тарифный план`, inline_keyboard: [[{text: `24 часа 79р`, callback_data: "24h"}], [{text: `7 дней 149р`, callback_data: "7d"}], [{text: `1 месяц 179р`, callback_data: "1M"}], [{text: `Навсегда 499р`, callback_data: "forever"}]]});
+        return query.edit({text: `Выберите тарифный план`, inline_keyboard: [[{text: `24 часа ${settings.vipDailyPrice}р`, callback_data: "24h"}], [{text: `7 дней ${settings.vipWeeklyPrice}р`, callback_data: "7d"}], [{text: `1 месяц ${settings.vipMonthlyPrice}р`, callback_data: "1M"}], [{text: `Навсегда ${settings.vipForeverPrice}р`, callback_data: "forever"}]]});
       }
     } catch (e) {
       console.log(e);
@@ -187,7 +187,7 @@ module.exports = {
     try {
       if (!query.data) return;
       const settings = await DefaultSettings.findOne();
-      const newBill = new Bills({amount: settings.vipDailyPrice, account: user._id.toString()});
+      const newBill = new Bills({amount: query.data==="24h"?settings.vipDailyPrice:query.data==="7d"?settings.vipWeeklyPrice:query.data==="1M"?settings.vipMonthlyPrice:settings.vipForeverPrice, account: user._id.toString()});
       await newBill.save();
       const data = await qiwiApi.createBill(newBill._id.toString(), {amount: newBill.amount, currency: 'RUB', comment: 'New purchase from TestMessageAnonBot', expirationDateTime: newBill.expirationDateTime.toISOString(), account: newBill.account, successUrl: `${serverUrl}/invoices`});
       await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "checkout", "state.plan": query.data, "state.billId": newBill._id.toString()});
