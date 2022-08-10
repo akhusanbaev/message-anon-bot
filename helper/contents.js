@@ -440,12 +440,14 @@ module.exports = {
   }, backRequestReadingPage: async (msg, user) => {
     try {
       if (!msg.text) return choosePossibleOptionValidator(msg);
+      const partner = await Users.findById(user.state.partner);
       if (msg.text === backRequestOpen) {
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request-see-requests"});
         return msg.reply({text: `${user.backRequests[0].content}`, keyboard: [[backRequestStartChat], [backRequestSkip]]});
       }
       if (msg.text === backRequestReject) {
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {$set: {backRequests: []}, "state.on": "home", "state.plan": null, "state.billId": null, "state.gender": null, "state.age": [], "state.country": null, "state.town": null, "state.user": null, "state.partner": null});
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "home", "state.plan": null, "state.billId": null, "state.gender": null, "state.age": [], "state.country": null, "state.town": null, "state.user": null, "state.partner": null});
+        await Users.findOneAndUpdate({"user.id": partner.user.id}, {$set: {backRequests: []}});
         return msg.reply({text: `Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
       }
     } catch (e) {
