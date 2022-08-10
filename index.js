@@ -15,14 +15,8 @@ const {welcomeMessage, choosingGender, choosingAge, choosingTown, choosingCountr
   backRequestWaitingPage, backRequestReadingPage, backRequestSeePage, chatVipPage, choosingChatVipPlan
 } = require("./helper/contents");
 const {randomPartner, searchByCity, chatRestricted, profile, vipAccess, cancelSearch, endDialog,
-  vipTryFree,
-  vipSubscribe,
-  fillSearch,
-  fillGender,
-  fillAge,
-  fillCountry,
-  fillTown,
-  fillExit, chooseGenderMale, chooseGenderFemale, profileEdit, profileVip, backRequestOpen, backRequestReject
+  vipTryFree, vipSubscribe, fillSearch, fillGender, fillAge, fillCountry, fillTown, fillExit,
+  chooseGenderMale, chooseGenderFemale, profileEdit, profileVip, backRequestOpen, backRequestReject
 } = require("./helper/buttons");
 
 const app = express();
@@ -34,27 +28,40 @@ app.use(express.json());
 app.post("/invoices", async (req, res) => {
   try {
     res.sendStatus(200);
-    console.log(req.body);
     const bill = await Bills.findById(req.body.bill.billId);
     if (!bill) return;
     if (req.body.bill.status.value === "PAID") {
       await Bills.findOneAndUpdate({_id: bill._id}, {status: "paid"});
       const user = await Users.findById(bill.account);
       if (user.state.on === "chat-checkout") {
-        if (user.state.plan === "24h") await Users.findOneAndUpdate({_id: user._id}, {vip: true, vipUntilDate: moment().add(24, "hours").toDate(), "state.on": "chat", "state.plan": null, "state.billId": null});
-        if (user.state.plan === "7d") await Users.findOneAndUpdate({_id: user._id}, {vip: true, vipUntilDate: moment().add(1, "week").toDate(), "state.on": "chat", "state.plan": null, "state.billId": null});
-        if (user.state.plan === "1M") await Users.findOneAndUpdate({_id: user._id}, {vip: true, vipUntilDate: moment().add(1, "month").toDate(), "state.on": "chat", "state.plan": null, "state.billId": null});
-        if (user.state.plan === "forever") await Users.findOneAndUpdate({_id: user._id}, {vip: true, vipUnlimited: true, "state.on": "chat", "state.plan": null, "state.billId": null});
+        if (user.state.plan === "24h") await Users.findOneAndUpdate({_id: user._id}, {vip: true, connectedVip: moment().toDate(), vipUntilDate: moment().add(24, "hours").toDate(), "state.on": "chat", "state.plan": null, "state.billId": null});
+        if (user.state.plan === "7d") await Users.findOneAndUpdate({_id: user._id}, {vip: true, connectedVip: moment().toDate(), vipUntilDate: moment().add(1, "week").toDate(), "state.on": "chat", "state.plan": null, "state.billId": null});
+        if (user.state.plan === "1M") await Users.findOneAndUpdate({_id: user._id}, {vip: true, connectedVip: moment().toDate(), vipUntilDate: moment().add(1, "month").toDate(), "state.on": "chat", "state.plan": null, "state.billId": null});
+        if (user.state.plan === "forever") await Users.findOneAndUpdate({_id: user._id}, {vip: true, connectedVip: moment().toDate(), vipUnlimited: true, "state.on": "chat", "state.plan": null, "state.billId": null});
         await bot.sendMessage(user.user.id, `Оплата произведена успешно!`);
         return bot.sendMessage(user.user.id, `Можете продолжать общение в чате:`);
       }
-      if (user.state.plan === "24h") await Users.findOneAndUpdate({_id: user._id}, {vip: true, vipUntilDate: moment().add(24, "hours").toDate(), "state.on": "home", "state.plan": null, "state.billId": null});
-      if (user.state.plan === "7d") await Users.findOneAndUpdate({_id: user._id}, {vip: true, vipUntilDate: moment().add(1, "week").toDate(), "state.on": "home", "state.plan": null, "state.billId": null});
-      if (user.state.plan === "1M") await Users.findOneAndUpdate({_id: user._id}, {vip: true, vipUntilDate: moment().add(1, "month").toDate(), "state.on": "home", "state.plan": null, "state.billId": null});
-      if (user.state.plan === "forever") await Users.findOneAndUpdate({_id: user._id}, {vip: true, vipUnlimited: true, "state.on": "home", "state.plan": null, "state.billId": null});
+      if (user.state.plan === "24h") await Users.findOneAndUpdate({_id: user._id}, {vip: true, connectedVip: moment().toDate(), vipUntilDate: moment().add(24, "hours").toDate(), "state.on": "home", "state.plan": null, "state.billId": null});
+      if (user.state.plan === "7d") await Users.findOneAndUpdate({_id: user._id}, {vip: true, connectedVip: moment().toDate(), vipUntilDate: moment().add(1, "week").toDate(), "state.on": "home", "state.plan": null, "state.billId": null});
+      if (user.state.plan === "1M") await Users.findOneAndUpdate({_id: user._id}, {vip: true, connectedVip: moment().toDate(), vipUntilDate: moment().add(1, "month").toDate(), "state.on": "home", "state.plan": null, "state.billId": null});
+      if (user.state.plan === "forever") await Users.findOneAndUpdate({_id: user._id}, {vip: true, connectedVip: moment().toDate(), vipUnlimited: true, "state.on": "home", "state.plan": null, "state.billId": null});
       await bot.sendMessage(user.user.id, `Оплата произведена успешно!`);
       return bot.sendMessage(user.user.id, `Выбери действие:`, {reply_markup: {resize_keyboard: true, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]}});
     }
+  } catch (e) {
+    console.log(e);
+  }
+});
+app.post("/renewals", async (req, res) => {
+  try {
+    const users = await Users.find({vipUntilDate: {$exists: true, $lte: moment().toDate()}});
+    if (!users.length) return res.sendStatus(201);
+    for (let i = 0; i < users.length; i++) {
+      const user = users[i];
+      await Users.findOneAndUpdate({"user.id": user.user.id}, {vip: false, vipUntilDate: null, vipExpired: moment().toDate});
+      if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town") await bot.sendMessage(user.user.id, `Срок подписки истек!`);
+    }
+    return res.sendStatus(201);
   } catch (e) {
     console.log(e);
   }
@@ -139,6 +146,7 @@ bot.on("message", async msg => {
         return msg.reply({text: `Мой профиль\n\nПол: ${user.gender === "male" ? chooseGenderMale : chooseGenderFemale}\nВозраст: ${user.age}\n\nVIP: ${user.vip ? user.vipUnlimited ? "Да(навсегда)" : user.trialSearches !== 0 ? `${user.trialSearches} пробных вип поисков` : user.vipUntilDate ? moment(user.vipUntilDate).format("MM/DD/YYYY") : "Нет" : "Нет"}\n\nВсего диалогов: ${user.totalDialogs}\nВсего сообщений: ${user.totalMessages}`, inline_keyboard: [[{text: profileEdit, callback_data: "edit"}], [{text: profileVip, callback_data: "vip"}]]});
       }
       if (msg.text === vipAccess || msg.text === "/vip") {
+        if (user.vip) return msg.reply({text: `У вас уже есть VIP`});
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "vip"});
         const button = user.hasFreeTrial?[{text: vipTryFree, callback_data: "try-free"}]:[{text: vipSubscribe, callback_data: "subscribe"}];
         return msg.reply({text: `VIP Доступы...`, inline_keyboard: [button]});

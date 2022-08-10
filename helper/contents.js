@@ -140,6 +140,7 @@ module.exports = {
         return msg.reply({text: `Мой профиль\n\nПол: ${user.gender === "male" ? chooseGenderMale : chooseGenderFemale}\nВозраст: ${user.age}\n\nVIP: ${user.vip ? user.vipUnlimited ? "Да(навсегда)" : user.trialSearches !== 0 ? `${user.trialSearches} пробных вип поисков` : user.vipUntilDate ? moment(user.vipUntilDate).format("MM/DD/YYYY") : "Нет" : "Нет"}\n\nВсего диалогов: ${user.totalDialogs}\nВсего сообщений: ${user.totalMessages}`, inline_keyboard: [[{text: profileEdit, callback_data: "edit"}], [{text: profileVip, callback_data: "vip"}]]});
       }
       if (msg.text === vipAccess || msg.text === "/vip") {
+        if (user.vip) return msg.reply({text: `У вас уже есть VIP`});
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "vip"});
         const button = user.hasFreeTrial?[{text: vipTryFree, callback_data: "try-free"}]:[{text: vipSubscribe, callback_data: "subscribe"}];
         return msg.reply({text: `VIP Доступы...`, inline_keyboard: [button]});
@@ -157,6 +158,7 @@ module.exports = {
         return query.edit({text: `Какой у вас пол?`, keyboard: [[chooseGenderMale], [chooseGenderFemale]]});
       }
       if (query.data === "vip") {
+        if (user.vip) return query.alert({text: `У вас уже есть VIP`, showAlert: true});
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "vip"});
         const button = user.hasFreeTrial?[{text: vipTryFree, callback_data: "try-free"}]:[{text: vipSubscribe, callback_data: "subscribe"}];
         return query.edit({text: `VIP Доступы...`, inline_keyboard: [button]});
