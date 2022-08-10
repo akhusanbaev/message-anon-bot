@@ -430,7 +430,7 @@ module.exports = {
       if (!msg.text) return unknownMessageHomepageValidator(msg);
       const partner = await Users.findById(user.state.user);
       if (msg.text === backRequestsExit) {
-        await Users.findOneAndUpdate({"user.id": partner.user.id}, {$pull: {"backRequests.from": user._id.toString()}});
+        await Users.findOneAndUpdate({"user.id": partner.user.id}, {$pull: {backRequests: {from: user._id.toString()}}});
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "home", "state.plan": null, "state.billId": null, "state.gender": null, "state.age": [], "state.country": null, "state.town": null, "state.user": null, "state.partner": null});
         return msg.reply({text: `Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
       }
