@@ -418,7 +418,7 @@ module.exports = {
       await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request-waiting", "state.user": partner._id.toString()});
       await Users.findOneAndUpdate({"user.id": partner.user.id}, {$push: {backRequests: {date: moment().toDate(), from: user._id.toString(), content: msg.text}}});
       if (partner.state.on !== "chat" && partner.state.on !== "back-request" && partner.state.on !== "search-filter-partner-fill-town" && partner.state.on !== "search-filter-partner-fill-country" && partner.state.on !== "search-filter-partner-fill-age" && partner.state.on !== "search-filter-partner-fill-gender" && partner.state.on !== "search-filter-partner" && partner.state.on !== "gender" && partner.state.on !== "age" && partner.state.on !== "country" && partner.state.on !== "town") {
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request-read"});
+        await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "back-request-read"});
         await msg.reply({chatId: partner.user.id, text: `У вас новые запросы на общение от ${user.backRequests.length!==1?"людей":"человека"}`, keyboard: [[backRequestOpen], [backRequestReject]]});
       }
       return msg.reply({text: `Ваш запрос отправлен пользователю`, keyboard: [[backRequestsExit]]});
