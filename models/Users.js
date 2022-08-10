@@ -17,6 +17,7 @@ const UserSchema = new Schema({
   completedRegistration: {type: Date},
   editedProfile: {type: Date},
   vip: {type: Boolean, required: true, default: false},
+  lastVipAccess: {type: Boolean, required: true, default: false},
   vipUnlimited: {type: Boolean, required: true, default: false},
   vipUntilDate: {type: Date},
   connectedVip: {type: Date},

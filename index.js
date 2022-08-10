@@ -22,7 +22,7 @@ const {randomPartner, searchByCity, chatRestricted, profile, vipAccess, cancelSe
   fillAge,
   fillCountry,
   fillTown,
-  fillExit, chooseGenderMale, chooseGenderFemale, profileEdit, profileVip
+  fillExit, chooseGenderMale, chooseGenderFemale, profileEdit, profileVip, backRequestOpen, backRequestReject
 } = require("./helper/buttons");
 
 const app = express();
@@ -74,6 +74,10 @@ bot.on("message", async msg => {
     await Users.findOneAndUpdate({"user.id": user.user.id}, {lastAction: moment().toDate()});
     if (user.left) await Users.findOneAndUpdate({"user.id": user.user.id}, {left: false, backDate: moment().toDate()});
     if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town" && msg.text) {
+      if (user.backRequests.length) {
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request-read"});
+        return msg.reply({text: `У вас новые запросы на общение от ${user.backRequests.length!==1?"людей":"человека"}`, keyboard: [[backRequestOpen], [backRequestReject]]});
+      }
       if (msg.text === randomPartner) {
         const searchResult = await Users.find({"state.on": "search-random-partner", "user.id": {$ne: user.user.id}}).sort("lastAction");
         let partner = searchResult.length?searchResult[0]:null;
@@ -113,6 +117,11 @@ bot.on("message", async msg => {
         return msg.reply({text: `Заданные параметры:\nПол: ${user.state.gender || "Без разницы"}\nВозраст: ${user.state.age || "Без разницы"}\nСтрана: ${user.state.country || "Без разницы"}\nГород: ${user.state.town || "Без разницы"}`, keyboard: [[fillSearch], [fillGender], [fillAge], [fillCountry], [fillTown], [fillExit]]});
       }
       if (msg.text === chatRestricted) {
+        if (!user.vip) {
+          await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "vip"});
+          const button = user.hasFreeTrial?[{text: vipTryFree, callback_data: "try-free"}]:[{text: vipSubscribe, callback_data: "subscribe"}];
+          return msg.reply({text: `Данная функция доступна только для VIP пользователей`, inline_keyboard: [button]});
+        }
         const searchResult = await Users.find({"state.on": "search-random-partner-restricted", gender: user.gender==="male"?"female":"male", "user.id": {$ne: user.user.id}, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: [user.country]}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
         const partner = searchResult.length?searchResult[0]:null;
         if (!partner) {

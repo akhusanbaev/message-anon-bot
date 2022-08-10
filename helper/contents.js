@@ -73,6 +73,10 @@ module.exports = {
   }, homepage: async (msg, user) => {
     try {
       if (!msg.text) return unknownMessageHomepageValidator(msg);
+      if (user.backRequests.length) {
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request-read"});
+        return msg.reply({text: `У вас новые запросы на общение от ${user.backRequests.length!==1?"людей":"человека"}`, keyboard: [[backRequestOpen], [backRequestReject]]});
+      }
       if (msg.text === randomPartner) {
         const searchResult = await Users.find({"state.on": "search-random-partner", "user.id": {$ne: user.user.id}}).sort("lastAction");
         let partner = searchResult.length?searchResult[0]:null;
@@ -112,13 +116,20 @@ module.exports = {
         return msg.reply({text: `Заданные параметры:\nПол: ${user.state.gender || "Без разницы"}\nВозраст: ${user.state.age || "Без разницы"}\nСтрана: ${user.state.country || "Без разницы"}\nГород: ${user.state.town || "Без разницы"}`, keyboard: [[fillSearch], [fillGender], [fillAge], [fillCountry], [fillTown], [fillExit]]});
       }
       if (msg.text === chatRestricted) {
+        if (!user.vip) {
+          await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "vip"});
+          const button = user.hasFreeTrial?[{text: vipTryFree, callback_data: "try-free"}]:[{text: vipSubscribe, callback_data: "subscribe"}];
+          return msg.reply({text: `Данная функция доступна только для VIP пользователей`, inline_keyboard: [button]});
+        }
         const searchResult = await Users.find({"state.on": "search-random-partner-restricted", gender: user.gender==="male"?"female":"male", "user.id": {$ne: user.user.id}, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: [user.country]}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
         const partner = searchResult.length?searchResult[0]:null;
         if (!partner) {
-          await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner-restricted"});
+          if (user.trialSearches === 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner-restricted", trialSearches: 0});
+          if (user.trialSearches > 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner-restricted", trialSearches: user.trialSearches-1});
           return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
         }
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString()});
+        if (user.trialSearches === 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), trialSearches: 0});
+        if (user.trialSearches > 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), trialSearches: user.trialSearches-1});
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString()});
         await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${user.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
         await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${partner.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
@@ -245,16 +256,18 @@ module.exports = {
         const searchResult = await Users.find({"state.on": "search-random-partner", "user.id": {$ne: user.user.id}, ...otherParams, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: [user.country]}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
         const partner = searchResult.length?searchResult[0]:null;
         if (!partner) {
-          await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
+          if (user.trialSearches === 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner", trialSearches: 0});
+          if (user.trialSearches > 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner", trialSearches: user.trialSearches-1});
           return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
         }
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString()});
+        if (user.trialSearches === 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), trialSearches: 0});
+        if (user.trialSearches > 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), trialSearches: user.trialSearches-1});
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString()});
         await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${user.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
         await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${partner.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
         return;
       }
-      if (msg.text !== fillGender && msg.text !== fillAge && msg.text !== fillCountry && msg.text !== fillTown) return // TODO
+      if (msg.text !== fillGender && msg.text !== fillAge && msg.text !== fillCountry && msg.text !== fillTown) return choosePossibleOptionValidator(msg);
       if (msg.text === fillGender) {
         fillField = "gender";
         params = {text: `Пол: ${user.state.gender?user.state.gender==="male"?"Мужской":"Женский":"Без разницы"}`, keyboard: [[chooseGenderMale], [chooseGenderFemale], [doesntMatter], [filterBack]]};
@@ -339,8 +352,12 @@ module.exports = {
     try {
       const partner = await Users.findById(user.partner);
       if (msg.text && msg.text === "/stop" || msg.text === endDialog) {
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "ended-chat", "state.partner": user.partner, partner: null});
-        await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "ended-chat", "state.partner": partner.partner, partner: null});
+        let userOptions = {};
+        let partnerOptions = {};
+        if (user.vip && user.trialSearches === 0) userOptions = {vip: false, lastVipAccess: true};
+        if (partner.vip && partner.trialSearches === 0) partnerOptions = {vip: false, lastVipAccess: true};
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "ended-chat", "state.partner": user.partner, partner: null, ...userOptions});
+        await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "ended-chat", "state.partner": partner.partner, partner: null, ...partnerOptions});
         await msg.reply({chatId: user.user.id, text: `Вы закончили диалог с собеседником\n/next - Найти следующего\n/back - вернуть собеседника\n/report - пожаловаться на спам`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
         await msg.reply({chatId: partner.user.id, text: `Ваш собеседник окончил диалог с вами\n/next - Найти следующего\n/back - вернуть собеседника\n/report - пожаловаться на спам`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
         return;
@@ -369,7 +386,7 @@ module.exports = {
         return msg.reply({text: `Жалоба отправлена. На рассмотрении модераторами`});
       }
       if (msg.text === "/back") {
-        if (!user.vip) return availableForVipOnlyValidator(msg);
+        if (!user.vip && !user.lastVipAccess) return availableForVipOnlyValidator(msg);
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request"});
         return msg.reply({text: `Введи текст запроса чтобы получатель понял, кто его оправил.\n\nПример:\nпривет, я Олег 22 года, случайно завершил диалог, давай продолжим?`, keyboard: [[backToMenu]]});
       }
