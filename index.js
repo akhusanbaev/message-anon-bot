@@ -8,6 +8,7 @@ const config = require("./helper/config");
 
 const {replyMessage, alertCallbackQuery, deleteCallbackQuery, editCallbackQuery} = require("./helper/botFunctions");
 const Users = require("./models/Users");
+const Admins = require("./models/Admins");
 const Bills = require("./models/Bills");
 const {welcomeMessage, choosingGender, choosingAge, choosingTown, choosingCountry, homepage, profilePage,
   choosingVipPlan, vipPage, randomPartnerPage, chatPage, endedChatPage, backRequestPage, filterFillGenderPage,
@@ -18,6 +19,11 @@ const {randomPartner, searchByCity, chatRestricted, profile, vipAccess, cancelSe
   vipTryFree, vipSubscribe, fillSearch, fillGender, fillAge, fillCountry, fillTown, fillExit,
   chooseGenderMale, chooseGenderFemale, profileEdit, profileVip, backRequestOpen, backRequestReject
 } = require("./helper/buttons");
+const {adminMainPage, adminHomepage, adminStatisticsFilterPage, adminStatisticsFilterOpenPage,
+  adminStatisticsFilterGenderPage, adminStatisticsFilterAgePage, adminStatisticsFilterCountryPage,
+  adminStatisticsFilterTownPage, adminStatisticsFilterShowPage, adminMailingPage, adminMailingAllPage,
+  adminMailingFilterPage
+} = require("./helper/adminContents");
 
 const app = express();
 const bot = new TelegramBotApi(config.telegramBotToken, {polling: true});
@@ -73,11 +79,24 @@ bot.on("message", async msg => {
     if (msg.chat.type !== "private") return;
     msg.reply = replyMessage(bot, msg);
     const user = await Users.findOne({"user.id": msg.chat.id});
+    const admin = await Admins.findOne({"user.id": msg.chat.id});
     if (!user) {
       const newUser = new Users({user: msg.from, startQuery: msg.text?msg.text.startsWith("/start ")?msg.text.substring(7, msg.text.length):"empty":"empty"});
       await newUser.save();
       return welcomeMessage(msg, newUser);
     }
+    if (admin && admin.state.on === "none" && msg.text && msg.text === "/admin") return adminMainPage(msg, admin);
+    if (admin && admin.state.on === "home") return adminHomepage(msg, admin);
+    if (admin && admin.state.on === "statistics") return adminStatisticsFilterPage(msg, admin);
+    if (admin && admin.state.on === "statistics-filter") return adminStatisticsFilterOpenPage(msg, admin);
+    if (admin && admin.state.on === "statistics-filter-gender") return adminStatisticsFilterGenderPage(msg, admin);
+    if (admin && admin.state.on === "statistics-filter-age") return adminStatisticsFilterAgePage(msg, admin);
+    if (admin && admin.state.on === "statistics-filter-country") return adminStatisticsFilterCountryPage(msg, admin);
+    if (admin && admin.state.on === "statistics-filter-town") return adminStatisticsFilterTownPage(msg, admin);
+    if (admin && admin.state.on === "statistics-filter-show") return adminStatisticsFilterShowPage(msg, admin);
+    if (admin && admin.state.on === "mailing") return adminMailingPage(msg, admin);
+    if (admin && admin.state.on === "mailing-all") return adminMailingAllPage(msg, admin);
+    if (admin && admin.state.on === "mailing-filter") return adminMailingFilterPage(msg, admin);
     await Users.findOneAndUpdate({"user.id": user.user.id}, {lastAction: moment().toDate()});
     if (user.left) await Users.findOneAndUpdate({"user.id": user.user.id}, {left: false, backDate: moment().toDate()});
     if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town" && msg.text) {
@@ -108,8 +127,8 @@ bot.on("message", async msg => {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
           return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
         }
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString()});
-        await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString()});
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), totalDialogs: user.totalDialogs+1});
+        await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString(), totalDialogs: partner.totalDialogs+1});
         await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${user.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
         await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${partner.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
         return;
@@ -132,11 +151,13 @@ bot.on("message", async msg => {
         const searchResult = await Users.find({"state.on": "search-random-partner-restricted", gender: user.gender==="male"?"female":"male", "user.id": {$ne: user.user.id}, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: [user.country]}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
         const partner = searchResult.length?searchResult[0]:null;
         if (!partner) {
-          await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner-restricted"});
+          if (user.trialSearches === 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner-restricted", trialSearches: 0});
+          if (user.trialSearches > 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner-restricted", trialSearches: user.trialSearches-1});
           return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
         }
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString()});
-        await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString()});
+        if (user.trialSearches === 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), trialSearches: 0, totalDialogs: user.totalDialogs+1});
+        if (user.trialSearches > 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), trialSearches: user.trialSearches-1, totalDialogs: user.totalDialogs+1});
+        await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString(), totalDialogs: partner.totalDialogs+1});
         await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${user.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
         await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${partner.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
         return;

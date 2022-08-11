@@ -38,5 +38,36 @@ module.exports = {
   backRequestOpen: `Посмотерть от кого`,
   backRequestReject: `Отклонить все`,
   backRequestStartChat: `Начать общение`,
-  backRequestSkip: `Пропустить`
+  backRequestSkip: `Пропустить`,
+
+  adminStatistics: `Статистика`,
+  adminMailing: `Рассылка`,
+  adminFreeTrialSearchesCount: `Количество пробных VIP поисков`,
+  adminChannelsToSubscribe: `Каналы для подписки`,
+  adminAdBanner: `Рекламный баннер`,
+  adminLinkForAdmins: `Ссылка для добавления админов`,
+  adminAdmins: `Администраторы`,
+  adminClose: `Закрыть`,
+
+  adminStatisticsFilter: `Фильтр`,
+
+  adminStatisticsFilterGender: `Пол`,
+  adminStatisticsFilterAge: `Возраст`,
+  adminStatisticsFilterCountry: `Страна`,
+  adminStatisticsFilterTown: `Город`,
+  adminStatisticsFilterShow: `Показать статистику`,
+  adminStatisticsFilterExit: `Выйти`,
+
+  adminStatisticsFilterGenderMale: `Мужский`,
+  adminStatisticsFilterGenderFemale: `Женский`,
+
+
+  adminMailAll: `Рассылка всем`,
+  adminMailFilter: `Фильтр`,
+
+
+  adminStatisticsFilterDoesntMatter: `Без разницы`,
+
+
+  adminCancelButton: `Назад`,
 }
