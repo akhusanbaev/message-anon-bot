@@ -65,6 +65,9 @@ module.exports = {
   adminMailAll: `Рассылка всем`,
   adminMailFilter: `Фильтр`,
 
+  adminMailingAddButtons: `Доб. кнопки`,
+  adminMailingContinue: `Продолжить`,
+  adminMailingMessagePreview: `Превью`,
 
   adminStatisticsFilterDoesntMatter: `Без разницы`,
 

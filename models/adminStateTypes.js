@@ -1,10 +1,70 @@
 const {Schema} = require("mongoose");
+const {MessageEntity, InputMedia, InlineKeyboardMarkup} = require("./telegram");
+const MailingMessage = new Schema({
+  methodName: {type: String},
+  text: {type: String},
+  entities: {type: [MessageEntity]},
+  disable_web_page_preview: {type: Boolean},
+  disable_notification: {type: Boolean},
+  protect_content: {type: Boolean},
+  reply_to_message_id: {type: Number},
+  allow_sending_without_reply: {type: Boolean},
+  reply_markup: {type: InlineKeyboardMarkup},
+  photo: {type: String},
+  caption: {type: String},
+  caption_entities: {type: [MessageEntity]},
+  audio: {type: String},
+  duration: {type: Number},
+  performer: {type: String},
+  title: {type: String},
+  thumb: {type: String},
+  document: {type: String},
+  video: {type: String},
+  width: {type: Number},
+  height: {type: Number},
+  supports_streaming: {type: Boolean},
+  animation: {type: String},
+  voice: {type: String},
+  video_note: {type: String},
+  length: {type: Number},
+  media: {type: [InputMedia]},
+  latitude: {type: Number},
+  longitude: {type: Number},
+  address: {type: String},
+  foursquare_id: {type: String},
+  foursquare_type: {type: String},
+  google_place_id: {type: String},
+  google_place_type: {type: String},
+  phone_number: {type: String},
+  first_name: {type: String},
+  last_name: {type: String},
+  vcard: {type: String},
+  options: {type: [String]},
+  is_anonymous: {type: Boolean},
+  type: {type: String},
+  allows_multiple_answers: {type: Boolean},
+  correct_option_id: {type: Number},
+  explanation: {type: String},
+  explanation_entities: {type: [MessageEntity]},
+  open_period: {type: Number},
+  close_date: {type: Number},
+  is_closed: {type: Boolean},
+  emoji: {type: String},
+  sticker: {type: String},
+});
+const AdminStateMailing = new Schema({
+  mailMessage: {type: MailingMessage},
+  startDate: {type: Date},
+  filter: {type: Object}
+});
 module.exports = {
   AdminState: new Schema({
     on: {type: String},
     filterGender: {type: String},
     filterAge: {type: [Number]},
     filterCountry: {type: String},
-    filterTown: {type: String}
-  })
+    filterTown: {type: String},
+    mailing: {type: AdminStateMailing}
+  }),
+  AdminStateMailing
 }

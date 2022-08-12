@@ -4,7 +4,8 @@ const {adminStatistics, adminMailing, adminFreeTrialSearchesCount, adminChannels
   adminLinkForAdmins, adminAdmins, adminClose, randomPartner, searchByCity, chatRestricted, profile, vipAccess,
   adminStatisticsFilterGender, adminStatisticsFilterAge, adminStatisticsFilterTown, adminStatisticsFilterShow,
   adminStatisticsFilterExit, adminStatisticsFilterGenderMale, adminStatisticsFilterGenderFemale, adminStatisticsFilter,
-  adminCancelButton, adminStatisticsFilterCountry, adminStatisticsFilterDoesntMatter, adminMailAll, adminMailFilter
+  adminCancelButton, adminStatisticsFilterCountry, adminStatisticsFilterDoesntMatter, adminMailAll, adminMailFilter,
+  adminMailingAddButtons, adminMailingContinue, adminMailingMessagePreview
 } = require("./buttons");
 const moment = require("moment");
 const {countriesData} = require("./countries");
@@ -196,7 +197,106 @@ module.exports = {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
         return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminClose]]});
       }
-      // TODO A LOT!
+      let params = {};
+      if (msg.text) {
+        params["state.mailing.mailMessage.methodName"] = "sendMessage";
+        params["state.mailing.mailMessage.text"] = msg.text;
+        params["state.mailing.mailMessage.entities"] = msg.entities;
+      }
+      if (msg.animation) {
+        params["state.mailing.mailMessage.methodName"] = "sendAnimation";
+        params["state.mailing.mailMessage.animation"] = msg.animation.file_id;
+        if (msg.caption) params["state.mailing.mailMessage.caption"] = msg.caption;
+        if (msg.caption_entities) params["state.mailing.mailMessage.caption_entities"] = msg.caption_entities
+      }
+      if (msg.audio) {
+        params["state.mailing.mailMessage.methodName"] = "sendAudio";
+        params["state.mailing.mailMessage.audio"] = msg.audio.file_id;
+        if (msg.caption) params["state.mailing.mailMessage.caption"] = msg.caption;
+        if (msg.caption_entities) params["state.mailing.mailMessage.caption_entities"] = msg.caption_entities
+      }
+      if (msg.document) {
+        params["state.mailing.mailMessage.methodName"] = "sendDocument";
+        params["state.mailing.mailMessage.document"] = msg.document.file_id;
+        if (msg.caption) params["state.mailing.mailMessage.caption"] = msg.caption;
+        if (msg.caption_entities) params["state.mailing.mailMessage.caption_entities"] = msg.caption_entities
+      }
+      if (msg.photo) {
+        params["state.mailing.mailMessage.methodName"] = "sendPhoto";
+        params["state.mailing.mailMessage.photo"] = msg.photo[msg.photo.length-1].file_id;
+        if (msg.caption) params["state.mailing.mailMessage.caption"] = msg.caption;
+        if (msg.caption_entities) params["state.mailing.mailMessage.caption_entities"] = msg.caption_entities
+      }
+      if (msg.sticker) {
+        params["state.mailing.mailMessage.methodName"] = "sendSticker";
+        params["state.mailing.mailMessage.sticker"] = msg.sticker.file_id;
+        if (msg.caption) params["state.mailing.mailMessage.caption"] = msg.caption;
+        if (msg.caption_entities) params["state.mailing.mailMessage.caption_entities"] = msg.caption_entities
+      }
+      if (msg.video) {
+        params["state.mailing.mailMessage.methodName"] = "sendVideo";
+        params["state.mailing.mailMessage.video"] = msg.video.file_id;
+        if (msg.caption) params["state.mailing.mailMessage.caption"] = msg.caption;
+        if (msg.caption_entities) params["state.mailing.mailMessage.caption_entities"] = msg.caption_entities
+      }
+      if (msg.video_note) {
+        params["state.mailing.mailMessage.methodName"] = "sendVideoNote";
+        params["state.mailing.mailMessage.video_note"] = msg.video_note.file_id;
+        if (msg.caption) params["state.mailing.mailMessage.caption"] = msg.caption;
+        if (msg.caption_entities) params["state.mailing.mailMessage.caption_entities"] = msg.caption_entities
+      }
+      if (msg.voice) {
+        params["state.mailing.mailMessage.methodName"] = "sendVoice";
+        params["state.mailing.mailMessage.voice"] = msg.voice.file_id;
+        if (msg.caption) params["state.mailing.mailMessage.caption"] = msg.caption;
+        if (msg.caption_entities) params["state.mailing.mailMessage.caption_entities"] = msg.caption_entities
+      }
+      if (msg.contact) {
+        params["state.mailing.mailMessage.methodName"] = "sendContact";
+        params["state.mailing.mailMessage.phone_number"] = msg.contact.phone_number;
+        params["state.mailing.mailMessage.first_name"] = msg.contact.first_name;
+        if (msg.contact.last_name) params["state.mailing.mailMessage.last_name"] = msg.contact.last_name;
+        if (msg.contact.user_id) params["state.mailing.mailMessage.user_id"] = msg.contact.user_id;
+        if (msg.contact.vcard) params["state.mailing.mailMessage.vcard"] = msg.contact.vcard;
+      }
+      if (msg.dice) {
+        params["state.mailing.mailMessage.methodName"] = "sendDice";
+        params["state.mailing.mailMessage.emoji"] = msg.dice.emoji;
+      }
+      if (msg.poll) {
+        params["state.mailing.mailMessage.methodName"] = "sendPoll";
+        params["state.mailing.mailMessage.question"] = msg.poll.question;
+        params["state.mailing.mailMessage.options"] = msg.poll.options;
+        if (msg.poll.is_anonymous) params["state.mailing.mailMessage.is_anonymous"] = msg.poll.is_anonymous;
+        if (msg.poll.type) params["state.mailing.mailMessage.type"] = msg.poll.type;
+        if (msg.poll.allows_multiple_answers) params["state.mailing.mailMessage.allows_multiple_answers"] = msg.poll.allows_multiple_answers;
+        if (msg.poll.correct_option_id) params["state.mailing.mailMessage.correct_option_id"] = msg.poll.correct_option_id;
+        if (msg.poll.explanation) params["state.mailing.mailMessage.explanation"] = msg.poll.explanation;
+        if (msg.poll.explanation_entities) params["state.mailing.mailMessage.explanation_entities"] = msg.poll.explanation_entities;
+        if (msg.poll.open_period) params["state.mailing.mailMessage.open_period"] = msg.poll.open_period;
+        if (msg.poll.close_date) params["state.mailing.mailMessage.close_date"] = msg.poll.close_date;
+      }
+      if (msg.venue) {
+        params["state.mailing.mailMessage.methodName"] = "sendVenue";
+        params["state.mailing.mailMessage.latitude"] = msg.venue.location.latitude;
+        params["state.mailing.mailMessage.longitude"] = msg.venue.location.longitude;
+        params["state.mailing.mailMessage.title"] = msg.venue.title;
+        params["state.mailing.mailMessage.address"] = msg.venue.address;
+        if (msg.venue.foursquare_id) params["state.mailing.mailMessage.foursquare_id"] = msg.venue.foursquare_id;
+        if (msg.venue.foursquare_type) params["state.mailing.mailMessage.foursquare_type"] = msg.venue.foursquare_type;
+        if (msg.venue.google_place_id) params["state.mailing.mailMessage.google_place_id"] = msg.venue.google_place_id;
+        if (msg.venue.google_place_type) params["state.mailing.mailMessage.google_place_type"] = msg.venue.google_place_type;
+      }
+      if (msg.location) {
+        params["state.mailing.mailMessage.methodName"] = "sendVenue";
+        params["state.mailing.mailMessage.latitude"] = msg.venue.location.latitude;
+        params["state.mailing.mailMessage.longitude"] = msg.venue.location.longitude;
+      }
+      await msg.reply({text: `Превью:`});
+      await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "mailing-all-message", ...params});
+      const nData = await Admins.findOne({"user.id": admin.user.id});
+      await msg.send({chat_id: nData.user.id, ...nData.state.mailing.mailMessage});
+      return msg.reply({text: `Дальнейшие действия:`, keyboard: [[adminMailingMessagePreview], [adminMailingAddButtons], [adminMailingContinue], [adminCancelButton]]});
     } catch (e) {
       console.log(e);
     }
@@ -207,5 +307,40 @@ module.exports = {
     } catch (e) {
       console.log(e);
     }
-  }
+  }, adminMailingAllMessagePage: async (msg, admin) => {
+    try {
+      if (!msg.text) return;
+      if (msg.text === adminMailingAddButtons) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "mailing-all-message-add-buttons"});
+        return msg.reply({text: `Напишите в формате:\n\ntitle - url\ntitle2 - url2\n\ntitle будет названием, url ссылкой\nкаждая новая кнопка с новой строки\n`, keyboard: [[adminCancelButton]]});
+      }
+      if (msg.text === adminMailingContinue) {
+        // TODO
+      }
+      if (msg.text === adminCancelButton) {
+        // TODO
+      }
+      if (msg.text === adminMailingMessagePreview) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "mailing-all-message"});
+        return msg.send({chat_id: admin.user.id, ...admin.state.mailing.mailMessage});
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }, adminMailingAllMessageAddButtonsPage: async (msg, admin) => {
+    try {
+      if (!msg.text) return;
+      if (msg.text === adminCancelButton) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "mailing-all-message"});
+        return msg.send({chat_id: admin.user.id, ...admin.state.mailing.mailMessage});
+      }
+      const arrays = msg.text.split("\n");
+      let buttons = [];
+      for (let i = 0; i < arrays.length; i++) {buttons = [...buttons, [{text: arrays[i].split(" - ")[0], url: arrays[i].split(" - ")[1]}]];}
+      await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "mailing-all-message", "state.mailing.mailMessage.reply_markup.inline_keyboard": buttons});
+      return msg.send({chat_id: admin.user.id, ...admin.state.mailing.mailMessage});
+    } catch (e) {
+      console.log(e);
+    }
+  },
 }

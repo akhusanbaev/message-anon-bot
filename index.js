@@ -6,7 +6,7 @@ const QiwiBillPaymentsAPI = require('@qiwi/bill-payments-node-js-sdk');
 
 const config = require("./helper/config");
 
-const {replyMessage, alertCallbackQuery, deleteCallbackQuery, editCallbackQuery} = require("./helper/botFunctions");
+const {replyMessage, alertCallbackQuery, deleteCallbackQuery, editCallbackQuery, sendMsg} = require("./helper/botFunctions");
 const Users = require("./models/Users");
 const Admins = require("./models/Admins");
 const Bills = require("./models/Bills");
@@ -22,7 +22,7 @@ const {randomPartner, searchByCity, chatRestricted, profile, vipAccess, cancelSe
 const {adminMainPage, adminHomepage, adminStatisticsFilterPage, adminStatisticsFilterOpenPage,
   adminStatisticsFilterGenderPage, adminStatisticsFilterAgePage, adminStatisticsFilterCountryPage,
   adminStatisticsFilterTownPage, adminStatisticsFilterShowPage, adminMailingPage, adminMailingAllPage,
-  adminMailingFilterPage
+  adminMailingFilterPage, adminMailingAllMessagePage, adminMailingAllMessageAddButtonsPage
 } = require("./helper/adminContents");
 
 const app = express();
@@ -78,6 +78,7 @@ bot.on("message", async msg => {
     if (!msg.chat) return;
     if (msg.chat.type !== "private") return;
     msg.reply = replyMessage(bot, msg);
+    msg.send = sendMsg(bot);
     const user = await Users.findOne({"user.id": msg.chat.id});
     const admin = await Admins.findOne({"user.id": msg.chat.id});
     if (!user) {
@@ -97,6 +98,8 @@ bot.on("message", async msg => {
     if (admin && admin.state.on === "mailing") return adminMailingPage(msg, admin);
     if (admin && admin.state.on === "mailing-all") return adminMailingAllPage(msg, admin);
     if (admin && admin.state.on === "mailing-filter") return adminMailingFilterPage(msg, admin);
+    if (admin && admin.state.on === "mailing-all-message") return adminMailingAllMessagePage(msg, admin);
+    if (admin && admin.state.on === "mailing-all-message-add-buttons") return adminMailingAllMessageAddButtonsPage(msg, admin);
     await Users.findOneAndUpdate({"user.id": user.user.id}, {lastAction: moment().toDate()});
     if (user.left) await Users.findOneAndUpdate({"user.id": user.user.id}, {left: false, backDate: moment().toDate()});
     if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town" && msg.text) {
