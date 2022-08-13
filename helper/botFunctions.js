@@ -82,8 +82,10 @@ module.exports = {
     } catch (e) {
       console.log(e)
     }
-  }, sendMsg: (bot) => async params => {
+  }, sendMsg: bot => async params => {
     try {
+      console.log("bot", bot)
+      console.log("params", params);
       if (params.text) {
         let options = params;
         delete options._id;
