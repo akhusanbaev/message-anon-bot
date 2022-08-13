@@ -84,15 +84,12 @@ module.exports = {
     }
   }, sendMsg: bot => async params => {
     try {
-      console.log("bot", bot)
-      console.log("params", params);
       if (params.text) {
         let options = params;
         delete options._id;
         delete options.methodName;
         delete options.chat_id;
         delete options.text;
-        console.log(options);
         return await bot.sendMessage(params.chat_id, params.text, options);
       }
       if (params.photo) {

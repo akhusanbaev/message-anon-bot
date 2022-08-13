@@ -340,9 +340,8 @@ module.exports = {
       await msg.reply({text: `Превью:`});
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "mailing-all-message", ...params});
       const nData = await Admins.findOne({"user.id": admin.user.id});
-      console.log("Admin DATA", nData);
+      console.log({...nData.state.mailing.mailMessage});
       await msg.send({chat_id: nData.user.id, ...nData.state.mailing.mailMessage});
-      console.log("MSG:", msg);
       return msg.reply({text: `Действия:`, keyboard: [[adminMailingMessagePreview], [adminMailingAddButtons], [adminMailingContinue], [adminCancelButton]]});
     } catch (e) {
       console.log(e);
