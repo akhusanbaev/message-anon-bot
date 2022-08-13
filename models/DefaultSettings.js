@@ -5,5 +5,6 @@ const DefaultSettingsSchema = new Schema({
   vipWeeklyPrice: {type: Number},
   vipMonthlyPrice: {type: Number},
   vipForeverPrice: {type: Number},
+  isMailing: {type: Boolean}
 });
 module.exports = model("default-settings", DefaultSettingsSchema);

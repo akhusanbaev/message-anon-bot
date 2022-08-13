@@ -44,7 +44,7 @@ module.exports = {
   adminMailing: `Рассылка`,
   adminFreeTrialSearchesCount: `Количество пробных VIP поисков`,
   adminChannelsToSubscribe: `Каналы для подписки`,
-  adminAdBanner: `Рекламный баннер`,
+  adminAdBanner: `Рекламные баннеры`,
   adminLinkForAdmins: `Ссылка для добавления админов`,
   adminAdmins: `Администраторы`,
   adminClose: `Закрыть`,
@@ -65,12 +65,26 @@ module.exports = {
   adminMailAll: `Рассылка всем`,
   adminMailFilter: `Фильтр`,
 
+  adminBannerAdd: `Доб. баннер`,
+  adminBannerSet: `Запустить(для всех)`,
+  adminBannerFilter: `Фильтр по параметрам`,
+  adminBannerDone: `Готово!`,
+  adminBannerReady: `Запустить(по настроенному фильтру)`,
+
+  adminAdminsDelete: `Удалить`,
+
   adminMailingAddButtons: `Доб. кнопки`,
   adminMailingContinue: `Продолжить`,
   adminMailingMessagePreview: `Превью`,
 
+  adminMailingAllMessageSchedule: `Запланировать`,
+  adminMailingAllMessageStart: `Начать рассылку`,
+
   adminStatisticsFilterDoesntMatter: `Без разницы`,
 
+  adminChannelsAddChannel: `Доб. канал`,
+  adminChannelsEditSubscriptions: `Изм. подписку`,
+  adminChannelsEditDelete: `Удалить канал`,
 
   adminCancelButton: `Назад`,
 }

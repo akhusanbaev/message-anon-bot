@@ -10,6 +10,7 @@ const {replyMessage, alertCallbackQuery, deleteCallbackQuery, editCallbackQuery,
 const Users = require("./models/Users");
 const Admins = require("./models/Admins");
 const Bills = require("./models/Bills");
+const ScheduledMails = require("./models/ScheduledMails");
 const {welcomeMessage, choosingGender, choosingAge, choosingTown, choosingCountry, homepage, profilePage,
   choosingVipPlan, vipPage, randomPartnerPage, chatPage, endedChatPage, backRequestPage, filterFillGenderPage,
   filterFillAgePage, filterFillCountryPage, filterPartnerPage, filterFillTownPage, randomPartnerRestrictedPage,
@@ -22,15 +23,27 @@ const {randomPartner, searchByCity, chatRestricted, profile, vipAccess, cancelSe
 const {adminMainPage, adminHomepage, adminStatisticsFilterPage, adminStatisticsFilterOpenPage,
   adminStatisticsFilterGenderPage, adminStatisticsFilterAgePage, adminStatisticsFilterCountryPage,
   adminStatisticsFilterTownPage, adminStatisticsFilterShowPage, adminMailingPage, adminMailingAllPage,
-  adminMailingFilterPage, adminMailingAllMessagePage, adminMailingAllMessageAddButtonsPage
+  adminMailingFilterPage, adminMailingAllMessagePage, adminMailingAllMessageAddButtonsPage,
+  adminMailingAllMessageContinuePage, adminMailingAllMessageContinueSchedulePage, adminMailingFilterGenderPage,
+  adminMailingFilterAgePage, adminMailingFilterCountryPage, adminMailingFilterTownPage, adminFreeTrialSearchesPage,
+  adminChannelsPage, adminChannelsAddPage, adminChannelsAddLinkPage, adminChannelsAddAdminPage, adminChannelsEditPage,
+  adminBannerPage, adminBannerAddPage, adminBannerAddMessagePage, adminBannerAddMessageAddButtonsPage,
+  adminBannerAddMessageContinuePage, adminBannerAddNamePage, adminBannerAddMessageFilterPage,
+  adminBannerAddMessageFilterGenderPage, adminBannerAddMessageFilterAgePage, adminBannerAddMessageFilterCountryPage,
+  adminBannerAddMessageFilterTownPage, adminBannerAddMessageFilterContinuePage, adminAdminsPage, adminAdminsEditPage
 } = require("./helper/adminContents");
+const Mailer = require("./helper/Mailer");
 
 const app = express();
-const bot = new TelegramBotApi(config.telegramBotToken, {polling: true});
+const bot = new TelegramBotApi(config.telegramBotToken);
 const qiwiApi = new QiwiBillPaymentsAPI(config.qApiPrivateKey);
 
 
 app.use(express.json());
+app.post(`/bot${config.telegramBotToken}`, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(201);
+});
 app.post("/invoices", async (req, res) => {
   try {
     res.sendStatus(200);
@@ -72,6 +85,26 @@ app.post("/renewals", async (req, res) => {
     console.log(e);
   }
 });
+app.get("/", async (req, res) => {
+    try {
+      res.sendStatus(201);
+      const mails = await ScheduledMails.find({startDate: {$lte: moment().toDate()}});
+      const admins = await Admins.find();
+      if (!mails.length) return;
+      const reply = replyMessage(bot);
+      for (let i = 0; i < admins.length; i++) {
+        if (admins[i].state.on === "home") {
+          await reply({chatId: admins[i].user.id, text: `Рассылка закончилась`});
+        }
+      }
+      for (let i = 0; i < mails.length; i++) {
+        await ScheduledMails.findOneAndUpdate({_id: mails[i]._id}, {modified: true});
+        new Mailer(mails[i].userIds, {send: sendMsg(bot), reply});
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  });
 
 bot.on("message", async msg => {
   try {
@@ -100,6 +133,32 @@ bot.on("message", async msg => {
     if (admin && admin.state.on === "mailing-filter") return adminMailingFilterPage(msg, admin);
     if (admin && admin.state.on === "mailing-all-message") return adminMailingAllMessagePage(msg, admin);
     if (admin && admin.state.on === "mailing-all-message-add-buttons") return adminMailingAllMessageAddButtonsPage(msg, admin);
+    if (admin && admin.state.on === "mailing-all-message-continue") return adminMailingAllMessageContinuePage(msg, admin);
+    if (admin && admin.state.on === "mailing-all-message-continue-schedule") return adminMailingAllMessageContinueSchedulePage(msg, admin);
+    if (admin && admin.state.on === "mailing-filter-gender") return adminMailingFilterGenderPage(msg, admin);
+    if (admin && admin.state.on === "mailing-filter-age") return adminMailingFilterAgePage(msg, admin);
+    if (admin && admin.state.on === "mailing-filter-country") return adminMailingFilterCountryPage(msg, admin);
+    if (admin && admin.state.on === "mailing-filter-town") return adminMailingFilterTownPage(msg, admin);
+    if (admin && admin.state.on === "trial-searches") return adminFreeTrialSearchesPage(msg, admin);
+    if (admin && admin.state.on === "channels") return adminChannelsPage(msg, admin);
+    if (admin && admin.state.on === "channels-add") return adminChannelsAddPage(msg, admin);
+    if (admin && admin.state.on === "channels-add-link") return adminChannelsAddLinkPage(msg, admin);
+    if (admin && admin.state.on === "channels-add-admin") return adminChannelsAddAdminPage(msg, admin);
+    if (admin && admin.state.on === "channels-edit") return adminChannelsEditPage(msg, admin);
+    if (admin && admin.state.on === "banner") return adminBannerPage(msg, admin);
+    if (admin && admin.state.on === "banner-add-name") return adminBannerAddNamePage(msg, admin);
+    if (admin && admin.state.on === "banner-add") return adminBannerAddPage(msg, admin);
+    if (admin && admin.state.on === "banner-add-message") return adminBannerAddMessagePage(msg, admin);
+    if (admin && admin.state.on === "banner-add-message-add-buttons") return adminBannerAddMessageAddButtonsPage(msg, admin);
+    if (admin && admin.state.on === "banner-add-message-continue") return adminBannerAddMessageContinuePage(msg, admin);
+    if (admin && admin.state.on === "banner-add-message-filter") return adminBannerAddMessageFilterPage(msg, admin);
+    if (admin && admin.state.on === "banner-add-message-filter-gender") return adminBannerAddMessageFilterGenderPage(msg, admin);
+    if (admin && admin.state.on === "banner-add-message-filter-age") return adminBannerAddMessageFilterAgePage(msg, admin);
+    if (admin && admin.state.on === "banner-add-message-filter-country") return adminBannerAddMessageFilterCountryPage(msg, admin);
+    if (admin && admin.state.on === "banner-add-message-filter-town") return adminBannerAddMessageFilterTownPage(msg, admin);
+    if (admin && admin.state.on === "banner-add-message-filter-continue") return adminBannerAddMessageFilterContinuePage(msg, admin);
+    if (admin && admin.state.on === "admins") return adminAdminsPage(msg, admin);
+    if (admin && admin.state.on === "admin-edit") return adminAdminsEditPage(msg, admin);
     await Users.findOneAndUpdate({"user.id": user.user.id}, {lastAction: moment().toDate()});
     if (user.left) await Users.findOneAndUpdate({"user.id": user.user.id}, {left: false, backDate: moment().toDate()});
     if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town" && msg.text) {
@@ -224,8 +283,8 @@ bot.on("callback_query", async query => {
 
 async function start() {
   try {
-    await connect(config.mongoUri)
-    await bot.setWebHook("")
+    await connect(config.mongoUri);
+    await bot.setWebHook(`${config.serverUrl}/bot${config.telegramBotToken}`);
     app.listen(config.port, () => {
       console.log("Started...");
     })

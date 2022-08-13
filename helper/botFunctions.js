@@ -1,9 +1,9 @@
 const {archiveTelegramChannel} = require("./config");
 const deleteCallbackQuery = (bot, query) => async () => {
   try {
-    return await bot.deleteMessage(query.message.chat.id, query.message.message_id)
+    return await bot.deleteMessage(query.message.chat.id, query.message.message_id);
   } catch (e) {
-    console.log(e)
+    console.log(e);
   }
 }
 module.exports = {

@@ -57,6 +57,11 @@ const AdminStateMailing = new Schema({
   startDate: {type: Date},
   filter: {type: Object}
 });
+const AdminStateBanner = new Schema({
+  name: {type: String},
+  mailMessage: {type: MailingMessage},
+  filter: {type: Object}
+});
 module.exports = {
   AdminState: new Schema({
     on: {type: String},
@@ -64,7 +69,13 @@ module.exports = {
     filterAge: {type: [Number]},
     filterCountry: {type: String},
     filterTown: {type: String},
-    mailing: {type: AdminStateMailing}
+    channelId: {type: String},
+    channelName: {type: String},
+    channelLink: {type: String},
+    mailing: {type: AdminStateMailing},
+    banner: {type: AdminStateBanner}
   }),
-  AdminStateMailing
+  AdminStateMailing,
+  AdminStateBanner,
+  MailingMessage
 }
