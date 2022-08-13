@@ -341,7 +341,7 @@ module.exports = {
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "mailing-all-message", ...params});
       const a = await Admins.findOne({"user.id": admin.user.id});
       let sendParams = a.state.mailing.mailMessage;
-      sendParams.chat_id = a.user.id;
+      sendParams.chat_id = admin.user.id;
       console.log(sendParams);
       // await msg.send(sendParams);
       return msg.reply({text: `Действия:`, keyboard: [[adminMailingMessagePreview], [adminMailingAddButtons], [adminMailingContinue], [adminCancelButton]]});
