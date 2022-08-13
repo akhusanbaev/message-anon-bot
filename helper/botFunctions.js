@@ -86,6 +86,7 @@ module.exports = {
     try {
       if (params.text) {
         let options = params;
+        delete options._id;
         delete options.methodName;
         delete options.chat_id;
         delete options.text;
@@ -93,6 +94,7 @@ module.exports = {
       }
       if (params.photo) {
         let options = params;
+        delete options._id;
         delete options.methodName;
         delete options.chat_id;
         delete options.photo;
@@ -100,6 +102,7 @@ module.exports = {
       }
       if (params.video) {
         let options = params;
+        delete options._id;
         delete options.methodName;
         delete options.chat_id;
         delete options.video;
@@ -107,6 +110,7 @@ module.exports = {
       }
       if (params.audio) {
         let options = params;
+        delete options._id;
         delete options.methodName;
         delete options.chat_id;
         delete options.audio;
@@ -114,6 +118,7 @@ module.exports = {
       }
       if (params.animation) {
         let options = params;
+        delete options._id;
         delete options.methodName;
         delete options.chat_id;
         delete options.animation;
@@ -121,6 +126,7 @@ module.exports = {
       }
       if (params.document) {
         let options = params;
+        delete options._id;
         delete options.methodName;
         delete options.chat_id;
         delete options.document;
@@ -128,6 +134,7 @@ module.exports = {
       }
       if (params.video_note) {
         let options = params;
+        delete options._id;
         delete options.methodName;
         delete options.chat_id;
         delete options.video_note;
@@ -135,6 +142,7 @@ module.exports = {
       }
       if (params.voice) {
         let options = params;
+        delete options._id;
         delete options.methodName;
         delete options.chat_id;
         delete options.voice;
@@ -142,6 +150,7 @@ module.exports = {
       }
       if (params.phone_number) {
         let options = params;
+        delete options._id;
         delete options.methodName;
         delete options.chat_id;
         delete options.phone_number;
@@ -150,12 +159,14 @@ module.exports = {
       }
       if (params.emoji) {
         let options = params;
+        delete options._id;
         delete options.methodName;
         delete options.chat_id;
         return await bot.sendDice(params.chat_id, options);
       }
       if (params.options) {
         let options = params;
+        delete options._id;
         delete options.methodName;
         delete options.chat_id;
         delete options.options;
@@ -164,6 +175,7 @@ module.exports = {
       }
       if (params.address) {
         let options = params;
+        delete options._id;
         delete options.methodName;
         delete options.chat_id;
         delete options.latitude;
@@ -174,6 +186,7 @@ module.exports = {
       }
       if (params.longitude) {
         let options = params;
+        delete options._id;
         delete options.methodName;
         delete options.chat_id;
         delete options.latitude;
@@ -182,6 +195,7 @@ module.exports = {
       }
       if (params.sticker) {
         let options = params;
+        delete options._id;
         delete options.methodName;
         delete options.chat_id;
         delete options.sticker;
