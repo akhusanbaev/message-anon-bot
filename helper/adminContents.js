@@ -37,7 +37,7 @@ module.exports = {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "statistics"});
         const users = await Users.find();
         const left = await Users.find({left: true});
-        const lastDay = await Users.find({joinDate: {$lte: moment().add(-1, "day").toDate()}});
+        const lastDay = await Users.find({joinDate: {$lte: moment().subtract(1, "day").toDate()}});
         const vipUsers = await Users.find({vip: true});
         return msg.reply({text: `Всего пользователей: ${users.length}\nПокинули бота: ${left.length}\nПрисоединились за последние 24 часа: ${lastDay.length}\nVIP пользователи: ${vipUsers.length}`, keyboard: [[adminStatisticsFilter], [adminCancelButton]]});
       }
