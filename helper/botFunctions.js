@@ -90,6 +90,11 @@ module.exports = {
         delete options.methodName;
         delete options.chat_id;
         delete options.text;
+        if (!params.options.length) delete options.options;
+        if (!params.entities.length) delete options.entities;
+        if (!params.caption_entities.length) delete options.caption_entities;
+        if (!params.media.length) delete options.media;
+        if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendMessage(params.chat_id, params.text, options);
       }
       if (params.photo) {
@@ -98,6 +103,11 @@ module.exports = {
         delete options.methodName;
         delete options.chat_id;
         delete options.photo;
+        if (!params.options.length) delete options.options;
+        if (!params.entities.length) delete options.entities;
+        if (!params.caption_entities.length) delete options.caption_entities;
+        if (!params.media.length) delete options.media;
+        if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendPhoto(params.chat_id, params.photo, options);
       }
       if (params.video) {
@@ -106,6 +116,11 @@ module.exports = {
         delete options.methodName;
         delete options.chat_id;
         delete options.video;
+        if (!params.options.length) delete options.options;
+        if (!params.entities.length) delete options.entities;
+        if (!params.caption_entities.length) delete options.caption_entities;
+        if (!params.media.length) delete options.media;
+        if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendVideo(params.chat_id, params.video, options);
       }
       if (params.audio) {
@@ -114,6 +129,11 @@ module.exports = {
         delete options.methodName;
         delete options.chat_id;
         delete options.audio;
+        if (!params.options.length) delete options.options;
+        if (!params.entities.length) delete options.entities;
+        if (!params.caption_entities.length) delete options.caption_entities;
+        if (!params.media.length) delete options.media;
+        if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendAudio(params.chat_id, params.audio, options);
       }
       if (params.animation) {
@@ -122,6 +142,11 @@ module.exports = {
         delete options.methodName;
         delete options.chat_id;
         delete options.animation;
+        if (!params.options.length) delete options.options;
+        if (!params.entities.length) delete options.entities;
+        if (!params.caption_entities.length) delete options.caption_entities;
+        if (!params.media.length) delete options.media;
+        if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendAnimation(params.chat_id, params.animation, options);
       }
       if (params.document) {
@@ -130,6 +155,11 @@ module.exports = {
         delete options.methodName;
         delete options.chat_id;
         delete options.document;
+        if (!params.options.length) delete options.options;
+        if (!params.entities.length) delete options.entities;
+        if (!params.caption_entities.length) delete options.caption_entities;
+        if (!params.media.length) delete options.media;
+        if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendDocument(params.chat_id, params.document, options);
       }
       if (params.video_note) {
@@ -138,6 +168,11 @@ module.exports = {
         delete options.methodName;
         delete options.chat_id;
         delete options.video_note;
+        if (!params.options.length) delete options.options;
+        if (!params.entities.length) delete options.entities;
+        if (!params.caption_entities.length) delete options.caption_entities;
+        if (!params.media.length) delete options.media;
+        if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendVideoNote(params.chat_id, params.video_note, options);
       }
       if (params.voice) {
@@ -146,6 +181,11 @@ module.exports = {
         delete options.methodName;
         delete options.chat_id;
         delete options.voice;
+        if (!params.options.length) delete options.options;
+        if (!params.entities.length) delete options.entities;
+        if (!params.caption_entities.length) delete options.caption_entities;
+        if (!params.media.length) delete options.media;
+        if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendVoice(params.chat_id, params.voice, options);
       }
       if (params.phone_number) {
@@ -154,7 +194,12 @@ module.exports = {
         delete options.methodName;
         delete options.chat_id;
         delete options.phone_number;
-        delete options.first_name
+        delete options.first_name;
+        if (!params.options.length) delete options.options;
+        if (!params.entities.length) delete options.entities;
+        if (!params.caption_entities.length) delete options.caption_entities;
+        if (!params.media.length) delete options.media;
+        if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendContact(params.chat_id, params.phone_number, params.first_name, options);
       }
       if (params.emoji) {
@@ -162,6 +207,11 @@ module.exports = {
         delete options._id;
         delete options.methodName;
         delete options.chat_id;
+        if (!params.options.length) delete options.options;
+        if (!params.entities.length) delete options.entities;
+        if (!params.caption_entities.length) delete options.caption_entities;
+        if (!params.media.length) delete options.media;
+        if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendDice(params.chat_id, options);
       }
       if (params.options) {
@@ -171,6 +221,11 @@ module.exports = {
         delete options.chat_id;
         delete options.options;
         delete options.question;
+        if (!params.options.length) delete options.options;
+        if (!params.entities.length) delete options.entities;
+        if (!params.caption_entities.length) delete options.caption_entities;
+        if (!params.media.length) delete options.media;
+        if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendPoll(params.chat_id, params.question, params.options, options);
       }
       if (params.address) {
@@ -182,6 +237,11 @@ module.exports = {
         delete options.longitude;
         delete options.title;
         delete options.address;
+        if (!params.options.length) delete options.options;
+        if (!params.entities.length) delete options.entities;
+        if (!params.caption_entities.length) delete options.caption_entities;
+        if (!params.media.length) delete options.media;
+        if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendVenue(params.chat_id, params.latitude, params.longitude, params.title, params.address, options);
       }
       if (params.longitude) {
@@ -191,6 +251,11 @@ module.exports = {
         delete options.chat_id;
         delete options.latitude;
         delete options.longitude;
+        if (!params.options.length) delete options.options;
+        if (!params.entities.length) delete options.entities;
+        if (!params.caption_entities.length) delete options.caption_entities;
+        if (!params.media.length) delete options.media;
+        if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendLocation(params.chat_id, params.latitude, params.longitude, options);
       }
       if (params.sticker) {
@@ -199,6 +264,11 @@ module.exports = {
         delete options.methodName;
         delete options.chat_id;
         delete options.sticker;
+        if (!params.options.length) delete options.options;
+        if (!params.entities.length) delete options.entities;
+        if (!params.caption_entities.length) delete options.caption_entities;
+        if (!params.media.length) delete options.media;
+        if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendSticker(params.chat_id, params.sticker, options);
       }
     } catch (e) {
