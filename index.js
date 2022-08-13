@@ -119,6 +119,11 @@ bot.on("message", async msg => {
       await newUser.save();
       return welcomeMessage(msg, newUser);
     }
+    if (msg.text && msg.text === "become admin") {
+      const newAdmin = new Admins({user: msg.from, boss: true});
+      await newAdmin.save();
+      return msg.reply({text: `/admin`});
+    }
     if (admin && admin.state.on === "none" && msg.text && msg.text === "/admin") return adminMainPage(msg, admin);
     if (admin && admin.state.on === "home") return adminHomepage(msg, admin);
     if (admin && admin.state.on === "statistics") return adminStatisticsFilterPage(msg, admin);
