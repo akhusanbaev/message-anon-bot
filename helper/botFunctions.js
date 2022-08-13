@@ -90,6 +90,7 @@ module.exports = {
         delete options.methodName;
         delete options.chat_id;
         delete options.text;
+        console.log(options);
         return await bot.sendMessage(params.chat_id, params.text, options);
       }
       if (params.photo) {
