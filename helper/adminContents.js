@@ -343,7 +343,7 @@ module.exports = {
       let sendParams = a.state.mailing.mailMessage;
       sendParams.chat_id = a.user.id;
       console.log(sendParams);
-      await msg.send(sendParams);
+      // await msg.send(sendParams);
       return msg.reply({text: `Действия:`, keyboard: [[adminMailingMessagePreview], [adminMailingAddButtons], [adminMailingContinue], [adminCancelButton]]});
     } catch (e) {
       console.log(e);
