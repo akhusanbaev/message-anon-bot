@@ -89,56 +89,56 @@ module.exports = {
         delete options.methodName;
         delete options.chat_id;
         delete options.text;
-        return await bot[params.methodName](params.chat_id, params.text, options);
+        return await bot.sendMessage(params.chat_id, params.text, options);
       }
       if (params.photo) {
         let options = params;
         delete options.methodName;
         delete options.chat_id;
         delete options.photo;
-        return await bot[params.methodName](params.chat_id, params.photo, options);
+        return await bot.sendPhoto(params.chat_id, params.photo, options);
       }
       if (params.video) {
         let options = params;
         delete options.methodName;
         delete options.chat_id;
         delete options.video;
-        return await bot[params.methodName](params.chat_id, params.video, options);
+        return await bot.sendVideo(params.chat_id, params.video, options);
       }
       if (params.audio) {
         let options = params;
         delete options.methodName;
         delete options.chat_id;
         delete options.audio;
-        return await bot[params.methodName](params.chat_id, params.audio, options);
+        return await bot.sendAudio(params.chat_id, params.audio, options);
       }
       if (params.animation) {
         let options = params;
         delete options.methodName;
         delete options.chat_id;
         delete options.animation;
-        return await bot[params.methodName](params.chat_id, params.animation, options);
+        return await bot.sendAnimation(params.chat_id, params.animation, options);
       }
       if (params.document) {
         let options = params;
         delete options.methodName;
         delete options.chat_id;
         delete options.document;
-        return await bot[params.methodName](params.chat_id, params.document, options);
+        return await bot.sendDocument(params.chat_id, params.document, options);
       }
       if (params.video_note) {
         let options = params;
         delete options.methodName;
         delete options.chat_id;
         delete options.video_note;
-        return await bot[params.methodName](params.chat_id, params.video_note, options);
+        return await bot.sendVideoNote(params.chat_id, params.video_note, options);
       }
       if (params.voice) {
         let options = params;
         delete options.methodName;
         delete options.chat_id;
         delete options.voice;
-        return await bot[params.methodName](params.chat_id, params.voice, options);
+        return await bot.sendVoice(params.chat_id, params.voice, options);
       }
       if (params.phone_number) {
         let options = params;
@@ -146,13 +146,13 @@ module.exports = {
         delete options.chat_id;
         delete options.phone_number;
         delete options.first_name
-        return await bot[params.methodName](params.chat_id, params.phone_number, params.first_name, options);
+        return await bot.sendContact(params.chat_id, params.phone_number, params.first_name, options);
       }
       if (params.emoji) {
         let options = params;
         delete options.methodName;
         delete options.chat_id;
-        return await bot[params.methodName](params.chat_id, options);
+        return await bot.sendDice(params.chat_id, options);
       }
       if (params.options) {
         let options = params;
@@ -160,7 +160,7 @@ module.exports = {
         delete options.chat_id;
         delete options.options;
         delete options.question;
-        return await bot[params.methodName](params.chat_id, params.question, params.options, options);
+        return await bot.sendPoll(params.chat_id, params.question, params.options, options);
       }
       if (params.address) {
         let options = params;
@@ -170,7 +170,7 @@ module.exports = {
         delete options.longitude;
         delete options.title;
         delete options.address;
-        return await bot[params.methodName](params.chat_id, params.latitude, params.longitude, params.title, params.address, options);
+        return await bot.sendVenue(params.chat_id, params.latitude, params.longitude, params.title, params.address, options);
       }
       if (params.longitude) {
         let options = params;
@@ -178,14 +178,14 @@ module.exports = {
         delete options.chat_id;
         delete options.latitude;
         delete options.longitude;
-        return await bot[params.methodName](params.chat_id, params.latitude, params.longitude, options);
+        return await bot.sendLocation(params.chat_id, params.latitude, params.longitude, options);
       }
       if (params.sticker) {
         let options = params;
         delete options.methodName;
         delete options.chat_id;
         delete options.sticker;
-        return await bot[params.methodName](params.chat_id, params.sticker, options);
+        return await bot.sendSticker(params.chat_id, params.sticker, options);
       }
     } catch (e) {
       console.log(e);
