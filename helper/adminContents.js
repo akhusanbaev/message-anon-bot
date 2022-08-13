@@ -242,7 +242,7 @@ module.exports = {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
         return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminClose]]});
       }
-      let params = {};
+      const params = {};
       if (msg.text) {
         params["state.mailing.mailMessage.methodName"] = "sendMessage";
         params["state.mailing.mailMessage.text"] = msg.text;
@@ -340,7 +340,7 @@ module.exports = {
       await msg.reply({text: `Превью:`});
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "mailing-all-message", ...params});
       const a = await Admins.findOne({"user.id": admin.user.id});
-      let sendParams = a.state.mailing.mailMessage;
+      const sendParams = a.state.mailing.mailMessage;
       sendParams.chat_id = admin.user.id;
       console.log(sendParams);
       // await msg.send(sendParams);
