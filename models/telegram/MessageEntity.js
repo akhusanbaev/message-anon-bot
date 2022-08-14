@@ -7,6 +7,7 @@ module.exports = {
     length: {type: Number},
     url: {type: String},
     user: {type: User},
-    language: {type: String}
+    language: {type: String},
+    custom_emoji_id: {type: String}
   })
 }

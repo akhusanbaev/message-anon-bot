@@ -34,12 +34,14 @@ module.exports = {
                 if (params.entities[i].user.can_read_all_group_messages) userData.can_read_all_group_messages = params.entities[i].user.can_read_all_group_messages;
                 if (params.entities[i].user.supports_inline_queries) userData.supports_inline_queries = params.entities[i].user.supports_inline_queries;
               }
-              const nObj = {type: params.entities[i].type, offset: params.entities[i].offset, length: params.entities[i].length, url: params.entities[i].url, language: params.entities[i].language, custom_emoji_id: params.entities[i].custom_emoji_id};
-              if (userData !== {}) nObj.user = userData;
+              const nObj = {type: params.entities[i].type, offset: params.entities[i].offset, length: params.entities[i].length};
+              if (params.entities[i].url) nObj.url = params.entities[i].url;
+              if (params.entities[i].language) nObj.language = params.entities[i].language;
+              if (params.entities[i].custom_emoji_id) nObj.custom_emoji_id = params.entities[i].custom_emoji_id;
+              if (userData.id) nObj.user = userData;
               messageEntities = [...messageEntities, nObj]
             }
           }
-          console.log(messageEntities);
           if (messageEntities.length) options.entities = messageEntities;
           if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendMessage(chat_id, text, options==={}?null:options);
@@ -66,8 +68,11 @@ module.exports = {
                 if (params.caption_entities[i].user.can_read_all_group_messages )userData.can_read_all_group_messages = params.caption_entities[i].user.can_read_all_group_messages;
                 if (params.caption_entities[i].user.supports_inline_queries) userData.supports_inline_queries = params.caption_entities[i].user.supports_inline_queries;
               }
-              const nObj = {type: params.caption_entities[i].type, offset: params.caption_entities[i].offset, length: params.caption_entities[i].length, url: params.caption_entities[i].url, language: params.caption_entities[i].language, custom_emoji_id: params.caption_entities[i].custom_emoji_id};
-              if (userData !== {}) nObj.user = userData;
+              const nObj = {type: params.caption_entities[i].type, offset: params.caption_entities[i].offset, length: params.caption_entities[i].length};
+              if (params.caption_entities[i].url) nObj.url = params.caption_entities[i].url;
+              if (params.caption_entities[i].language) nObj.language = params.caption_entities[i].language;
+              if (params.caption_entities[i].custom_emoji_id) nObj.custom_emoji_id = params.caption_entities[i].custom_emoji_id;
+              if (userData.id) nObj.user = userData;
               messageEntities = [...messageEntities, nObj]
             }
           }
@@ -97,8 +102,11 @@ module.exports = {
                 if (params.caption_entities[i].user.can_read_all_group_messages )userData.can_read_all_group_messages = params.caption_entities[i].user.can_read_all_group_messages;
                 if (params.caption_entities[i].user.supports_inline_queries) userData.supports_inline_queries = params.caption_entities[i].user.supports_inline_queries;
               }
-              const nObj = {type: params.caption_entities[i].type, offset: params.caption_entities[i].offset, length: params.caption_entities[i].length, url: params.caption_entities[i].url, language: params.caption_entities[i].language, custom_emoji_id: params.caption_entities[i].custom_emoji_id};
-              if (userData !== {}) nObj.user = userData;
+              const nObj = {type: params.caption_entities[i].type, offset: params.caption_entities[i].offset, length: params.caption_entities[i].length};
+              if (params.caption_entities[i].url) nObj.url = params.caption_entities[i].url;
+              if (params.caption_entities[i].language) nObj.language = params.caption_entities[i].language;
+              if (params.caption_entities[i].custom_emoji_id) nObj.custom_emoji_id = params.caption_entities[i].custom_emoji_id;
+              if (userData.id) nObj.user = userData;
               messageEntities = [...messageEntities, nObj]
             }
           }
@@ -130,8 +138,11 @@ module.exports = {
                 if (params.caption_entities[i].user.can_read_all_group_messages )userData.can_read_all_group_messages = params.caption_entities[i].user.can_read_all_group_messages;
                 if (params.caption_entities[i].user.supports_inline_queries) userData.supports_inline_queries = params.caption_entities[i].user.supports_inline_queries;
               }
-              const nObj = {type: params.caption_entities[i].type, offset: params.caption_entities[i].offset, length: params.caption_entities[i].length, url: params.caption_entities[i].url, language: params.caption_entities[i].language, custom_emoji_id: params.caption_entities[i].custom_emoji_id};
-              if (userData !== {}) nObj.user = userData;
+              const nObj = {type: params.caption_entities[i].type, offset: params.caption_entities[i].offset, length: params.caption_entities[i].length};
+              if (params.caption_entities[i].url) nObj.url = params.caption_entities[i].url;
+              if (params.caption_entities[i].language) nObj.language = params.caption_entities[i].language;
+              if (params.caption_entities[i].custom_emoji_id) nObj.custom_emoji_id = params.caption_entities[i].custom_emoji_id;
+              if (userData.id) nObj.user = userData;
               messageEntities = [...messageEntities, nObj]
             }
           }
@@ -161,8 +172,11 @@ module.exports = {
                 if (params.caption_entities[i].user.can_read_all_group_messages )userData.can_read_all_group_messages = params.caption_entities[i].user.can_read_all_group_messages;
                 if (params.caption_entities[i].user.supports_inline_queries) userData.supports_inline_queries = params.caption_entities[i].user.supports_inline_queries;
               }
-              const nObj = {type: params.caption_entities[i].type, offset: params.caption_entities[i].offset, length: params.caption_entities[i].length, url: params.caption_entities[i].url, language: params.caption_entities[i].language, custom_emoji_id: params.caption_entities[i].custom_emoji_id};
-              if (userData !== {}) nObj.user = userData;
+              const nObj = {type: params.caption_entities[i].type, offset: params.caption_entities[i].offset, length: params.caption_entities[i].length};
+              if (params.caption_entities[i].url) nObj.url = params.caption_entities[i].url;
+              if (params.caption_entities[i].language) nObj.language = params.caption_entities[i].language;
+              if (params.caption_entities[i].custom_emoji_id) nObj.custom_emoji_id = params.caption_entities[i].custom_emoji_id;
+              if (userData.id) nObj.user = userData;
               messageEntities = [...messageEntities, nObj]
             }
           }
@@ -192,9 +206,12 @@ module.exports = {
                 if (params.caption_entities[i].user.can_read_all_group_messages )userData.can_read_all_group_messages = params.caption_entities[i].user.can_read_all_group_messages;
                 if (params.caption_entities[i].user.supports_inline_queries) userData.supports_inline_queries = params.caption_entities[i].user.supports_inline_queries;
               }
-              const nObj = {type: params.caption_entities[i].type, offset: params.caption_entities[i].offset, length: params.caption_entities[i].length, url: params.caption_entities[i].url, language: params.caption_entities[i].language, custom_emoji_id: params.caption_entities[i].custom_emoji_id};
-              if (userData !== {}) nObj.user = userData;
-              messageEntities = [...messageEntities, nObj]
+              const nObj = {type: params.caption_entities[i].type, offset: params.caption_entities[i].offset, length: params.caption_entities[i].length};
+              if (params.caption_entities[i].url) nObj.url = params.caption_entities[i].url;
+              if (params.caption_entities[i].language) nObj.language = params.caption_entities[i].language;
+              if (params.caption_entities[i].custom_emoji_id) nObj.custom_emoji_id = params.caption_entities[i].custom_emoji_id;
+              if (userData.id) nObj.user = userData;
+              messageEntities = [...messageEntities, nObj];
             }
           }
           if (messageEntities.length) options.caption_entities = messageEntities;
@@ -222,9 +239,12 @@ module.exports = {
                 if (params.caption_entities[i].user.can_read_all_group_messages )userData.can_read_all_group_messages = params.caption_entities[i].user.can_read_all_group_messages;
                 if (params.caption_entities[i].user.supports_inline_queries) userData.supports_inline_queries = params.caption_entities[i].user.supports_inline_queries;
               }
-              const nObj = {type: params.caption_entities[i].type, offset: params.caption_entities[i].offset, length: params.caption_entities[i].length, url: params.caption_entities[i].url, language: params.caption_entities[i].language, custom_emoji_id: params.caption_entities[i].custom_emoji_id};
-              if (userData !== {}) nObj.user = userData;
-              messageEntities = [...messageEntities, nObj]
+              const nObj = {type: params.caption_entities[i].type, offset: params.caption_entities[i].offset, length: params.caption_entities[i].length};
+              if (params.caption_entities[i].url) nObj.url = params.caption_entities[i].url;
+              if (params.caption_entities[i].language) nObj.language = params.caption_entities[i].language;
+              if (params.caption_entities[i].custom_emoji_id) nObj.custom_emoji_id = params.caption_entities[i].custom_emoji_id;
+              if (userData.id) nObj.user = userData;
+              messageEntities = [...messageEntities, nObj];
             }
           }
           if (messageEntities.length) options.caption_entities = messageEntities;
@@ -253,9 +273,12 @@ module.exports = {
                 if (params.caption_entities[i].user.can_read_all_group_messages )userData.can_read_all_group_messages = params.caption_entities[i].user.can_read_all_group_messages;
                 if (params.caption_entities[i].user.supports_inline_queries) userData.supports_inline_queries = params.caption_entities[i].user.supports_inline_queries;
               }
-              const nObj = {type: params.caption_entities[i].type, offset: params.caption_entities[i].offset, length: params.caption_entities[i].length, url: params.caption_entities[i].url, language: params.caption_entities[i].language, custom_emoji_id: params.caption_entities[i].custom_emoji_id};
-              if (userData !== {}) nObj.user = userData;
-              messageEntities = [...messageEntities, nObj]
+              const nObj = {type: params.caption_entities[i].type, offset: params.caption_entities[i].offset, length: params.caption_entities[i].length};
+              if (params.caption_entities[i].url) nObj.url = params.caption_entities[i].url;
+              if (params.caption_entities[i].language) nObj.language = params.caption_entities[i].language;
+              if (params.caption_entities[i].custom_emoji_id) nObj.custom_emoji_id = params.caption_entities[i].custom_emoji_id;
+              if (userData.id) nObj.user = userData;
+              messageEntities = [...messageEntities, nObj];
             }
           }
           if (messageEntities.length) options.caption_entities = messageEntities;
@@ -307,12 +330,15 @@ module.exports = {
                 if (params.explanation_entities[i].user.can_read_all_group_messages )userData.can_read_all_group_messages = params.explanation_entities[i].user.can_read_all_group_messages;
                 if (params.explanation_entities[i].user.supports_inline_queries) userData.supports_inline_queries = params.explanation_entities[i].user.supports_inline_queries;
               }
-              const nObj = {type: params.explanation_entities[i].type, offset: params.explanation_entities[i].offset, length: params.explanation_entities[i].length, url: params.explanation_entities[i].url, language: params.explanation_entities[i].language, custom_emoji_id: params.explanation_entities[i].custom_emoji_id};
-              if (userData !== {}) nObj.user = userData;
+              const nObj = {type: params.explanation_entities[i].type, offset: params.explanation_entities[i].offset, length: params.explanation_entities[i].length};
+              if (params.explanation_entities[i].url) nObj.url = params.explanation_entities[i].url;
+              if (params.explanation_entities[i].language) nObj.language = params.explanation_entities[i].language;
+              if (params.explanation_entities[i].custom_emoji_id) nObj.custom_emoji_id = params.explanation_entities[i].custom_emoji_id;
+              if (userData.id) nObj.user = userData;
               messageEntities = [...messageEntities, nObj]
             }
           }
-          if (messageEntities.length) opts.explanation_entities;
+          if (messageEntities.length) opts.explanation_entities = messageEntities;
           if (params.reply_markup) opts.reply_markup = params.reply_markup;
           return await bot.sendPoll(chat_id, question, options, opts==={}?null:opts);
         }
@@ -327,10 +353,6 @@ module.exports = {
           if (params.google_place_id) options.google_place_id = params.google_place_id;
           if (params.google_place_type) options.google_place_type = params.google_place_type;
           if (params.options.length) options.options = params.options;
-          if (params.entities.length) options.entities = params.entities;
-          if (params.caption_entities.length) options.caption_entities = params.caption_entities;
-          if (params.media.length) options.media = params.media;
-          if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
           if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendVenue(chat_id, latitude, longitude, title, address, options==={}?null:options);
         }
@@ -340,20 +362,12 @@ module.exports = {
           const options = {};
           if (params.options.length) options.options = params.options;
           if (params.entities.length) options.entities = params.entities;
-          if (params.caption_entities.length) options.caption_entities = params.caption_entities;
-          if (params.media.length) options.media = params.media;
-          if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
           if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendLocation(chat_id, latitude, longitude, options==={}?null:options);
         }
         if (params.sticker) {
           const sticker = params.sticker;
           const options = {};
-          if (params.options.length) options.options = params.options;
-          if (params.entities.length) options.entities = params.entities;
-          if (params.caption_entities.length) options.caption_entities = params.caption_entities;
-          if (params.media.length) options.media = params.media;
-          if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
           if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendSticker(chat_id, sticker, options==={}?null:options);
         }
