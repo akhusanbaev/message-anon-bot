@@ -14,7 +14,7 @@ const ScheduledMails = require("./models/ScheduledMails");
 const {welcomeMessage, choosingGender, choosingAge, choosingTown, choosingCountry, homepage, profilePage,
   choosingVipPlan, randomPartnerPage, chatPage, endedChatPage, backRequestPage, filterFillGenderPage,
   filterFillAgePage, filterFillCountryPage, filterPartnerPage, filterFillTownPage, randomPartnerRestrictedPage,
-  backRequestWaitingPage, backRequestReadingPage, backRequestSeePage, choosingChatVipPlan
+  backRequestWaitingPage, backRequestReadingPage, backRequestSeePage, choosingChatVipPlan, choosingChatVipPlanMsg
 } = require("./helper/contents");
 const {randomPartner, searchByCity, chatRestricted, profile, vipAccess, cancelSearch, endDialog,
   vipTryFree, fillSearch, fillGender, fillAge, fillCountry, fillTown, fillExit,
@@ -250,6 +250,7 @@ bot.on("message", async msg => {
     if (user.state.on === "search-filter-partner-fill-country") return filterFillCountryPage(msg, user);
     if (user.state.on === "search-filter-partner-fill-town") return filterFillTownPage(msg, user);
     if (user.state.on === "chat") return chatPage(msg, user);
+    if (user.state.on === "choose-chat-vip-plan") return choosingChatVipPlanMsg(msg, user);
     if (user.state.on === "ended-chat") return endedChatPage(msg, user);
     if (user.state.on === "back-request") return backRequestPage(msg, user);
     if (user.state.on === "back-request-waiting") return backRequestWaitingPage(msg, user);

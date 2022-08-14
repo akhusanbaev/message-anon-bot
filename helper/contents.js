@@ -193,7 +193,34 @@ module.exports = {
     } catch (e) {
       console.log(e);
     }
-  }, choosingChatVipPlan: async (query, user, qiwiApi) => {
+  }, choosingChatVipPlanMsg: async (msg, user) => {
+    try {
+      const partner = await Users.findById(user.partner);
+      if (msg.text && msg.text === "/stop" || msg.text === endDialog) {
+        let userOptions = {};
+        let partnerOptions = {};
+        if (user.vip && user.trialSearches === 0) userOptions = {vip: false, lastVipAccess: true};
+        if (partner.vip && partner.trialSearches === 0) partnerOptions = {vip: false, lastVipAccess: true};
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "ended-chat", "state.partner": user.partner, partner: null, ...userOptions});
+        await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "ended-chat", "state.partner": partner.partner, partner: null, ...partnerOptions});
+        await msg.reply({chatId: user.user.id, text: `Вы закончили диалог с собеседником\n/next - Найти следующего\n/back - вернуть собеседника\n/report - пожаловаться на спам`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
+        await msg.reply({chatId: partner.user.id, text: `Ваш собеседник окончил диалог с вами\n/next - Найти следующего\n/back - вернуть собеседника\n/report - пожаловаться на спам`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
+        return;
+      }
+      if (msg.text && msg.text === "/vip") {
+        if (user.vip) return msg.reply({text: `У вас уже есть VIP`});
+        const settings = await DefaultSettings.findOne();
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "choose-chat-vip-plan"});
+        let buttons = [[{text: `24 часа ${settings.vipDailyPrice}р`, callback_data: "24h"}], [{text: `7 дней ${settings.vipWeeklyPrice}р`, callback_data: "7d"}], [{text: `1 месяц ${settings.vipMonthlyPrice}р`, callback_data: "1M"}], [{text: `Навсегда ${settings.vipForeverPrice}р`, callback_data: "forever"}]];
+        if (user.hasFreeTrial) buttons = [[{text: `${vipTryFree}(${settings.freeTrialSearches} поисков)`, callback_data: "try-free"}], ...buttons];
+        return msg.reply({text: `Выберите тарифный план`, inline_keyboard: buttons});
+      }
+      await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", totalMessages: user.totalMessages+1});
+      return msg.reply({chatId: partner.user.id, fromChatId: user.user.id, messageId: msg.message_id});
+    } catch (e) {
+      console.log(e);
+    }
+  },choosingChatVipPlan: async (query, user, qiwiApi) => {
     try {
       if (!query.data) return;
       const settings = await DefaultSettings.findOne();
