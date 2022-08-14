@@ -54,7 +54,7 @@ module.exports = {
         const channels = await Channels.find();
         let buttons = [];
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "channels"});
-        if (!channels.length) return msg.reply({text: `Каналы`, keyboard: [[adminChannelsAddChannel]]});
+        if (!channels.length) return msg.reply({text: `Каналы`, keyboard: [[adminChannelsAddChannel], [adminCancelButton]]});
         for (let i = 0; i < channels.length; i++) {buttons = [...buttons, [channels[i].name]];}
         return msg.reply({text: `Каналы`, keyboard: [...buttons, [adminChannelsAddChannel], [adminCancelButton]]});
       }
