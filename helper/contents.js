@@ -143,15 +143,7 @@ module.exports = {
       }
       if (msg.text === profile) {
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "profile-page"});
-        return msg.reply({text: `🎭Мой профиль
-
-Пол: ${user.gender === "male" ? chooseGenderMale : chooseGenderFemale}
-Возраст: ${user.age}
-
-VIP: ${user.vip ? user.vipUnlimited ? "Да(навсегда)" : user.trialSearches !== 0 ? `${user.trialSearches} пробных вип поисков` : user.vipUntilDate ? moment(user.vipUntilDate).format("MM/DD/YYYY") : "Нет" : "Нет"}
-
-Всего диалогов: ${user.totalDialogs}
-Всего сообщений: ${user.totalMessages}`, inline_keyboard: [[{text: profileEdit, callback_data: "edit"}], [{text: profileVip, callback_data: "vip"}]]});
+        return msg.reply({text: `🎭 Мой профиль\n\nПол: ${user.gender === "male" ? chooseGenderMale : chooseGenderFemale}\nВозраст: ${user.age}\n\nVIP: ${user.vip ? user.vipUnlimited ? "Да(навсегда)" : user.trialSearches !== 0 ? `${user.trialSearches} пробных вип поисков` : user.vipUntilDate ? moment(user.vipUntilDate).format("MM/DD/YYYY") : "Нет" : "Нет"}\n\nВсего диалогов: ${user.totalDialogs}\nВсего сообщений: ${user.totalMessages}`, inline_keyboard: [[{text: profileEdit, callback_data: "edit"}], [{text: profileVip, callback_data: "vip"}]]});
       }
       if (msg.text === vipAccess || msg.text === "/vip") {
         if (user.vip) return msg.reply({text: `У вас уже есть VIP`});
