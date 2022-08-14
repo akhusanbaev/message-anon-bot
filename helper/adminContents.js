@@ -688,7 +688,7 @@ module.exports = {
       if (msg.text) {
         params["state.banner.mailMessage.methodName"] = "sendMessage";
         params["state.banner.mailMessage.text"] = msg.text;
-        params["state.banner.mailMessage.entities"] = msg.entities;
+        if (msg.entities) params["state.banner.mailMessage.entities"] = msg.entities;
       }
       if (msg.animation) {
         params["state.banner.mailMessage.methodName"] = "sendAnimation";
@@ -782,7 +782,7 @@ module.exports = {
       await msg.reply({text: `Превью:`});
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "banner-add-message", ...params});
       const nData = await Admins.findOne({"user.id": admin.user.id});
-      await msg.reply({chat_id: nData.user.id, params: nData.state.mailing.mailMessage, telegramMessage: true});
+      await msg.reply({chat_id: nData.user.id, params: nData.state.banner.mailMessage, telegramMessage: true});
       return msg.reply({text: `Что дальше?`, keyboard: [[adminMailingAddButtons], [adminMailingContinue], [adminMailingMessagePreview], [adminCancelButton]]});
     } catch (e) {
       console.log(e);
