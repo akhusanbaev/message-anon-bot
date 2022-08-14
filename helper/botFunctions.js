@@ -94,6 +94,7 @@ module.exports = {
         if (!params.caption_entities.length) delete options.caption_entities;
         if (!params.media.length) delete options.media;
         if (!params.explanation_entities.length) delete options.explanation_entities;
+        console.log(options);
         return await bot.sendMessage(chat_id, params.text, options);
       }
       if (params.photo) {
@@ -112,7 +113,6 @@ module.exports = {
         let options = params;
         delete options._id;
         delete options.methodName;
-
         delete options.video;
         if (!params.options.length) delete options.options;
         if (!params.entities.length) delete options.entities;
@@ -205,7 +205,7 @@ module.exports = {
         if (!params.explanation_entities.length) delete options.explanation_entities;
         return await bot.sendDice(chat_id, options);
       }
-      if (params.options) {
+      if (params.options.length) {
         let options = params;
         delete options._id;
         delete options.methodName;
