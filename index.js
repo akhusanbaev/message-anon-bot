@@ -12,9 +12,9 @@ const Admins = require("./models/Admins");
 const Bills = require("./models/Bills");
 const ScheduledMails = require("./models/ScheduledMails");
 const {welcomeMessage, choosingGender, choosingAge, choosingTown, choosingCountry, homepage, profilePage,
-  choosingVipPlan, vipPage, randomPartnerPage, chatPage, endedChatPage, backRequestPage, filterFillGenderPage,
+  choosingVipPlan, randomPartnerPage, chatPage, endedChatPage, backRequestPage, filterFillGenderPage,
   filterFillAgePage, filterFillCountryPage, filterPartnerPage, filterFillTownPage, randomPartnerRestrictedPage,
-  backRequestWaitingPage, backRequestReadingPage, backRequestSeePage, chatVipPage, choosingChatVipPlan
+  backRequestWaitingPage, backRequestReadingPage, backRequestSeePage, choosingChatVipPlan
 } = require("./helper/contents");
 const {randomPartner, searchByCity, chatRestricted, profile, vipAccess, cancelSearch, endDialog,
   vipTryFree, vipSubscribe, fillSearch, fillGender, fillAge, fillCountry, fillTown, fillExit,
@@ -237,9 +237,11 @@ bot.on("message", async msg => {
       }
       if (msg.text === vipAccess || msg.text === "/vip") {
         if (user.vip) return msg.reply({text: `У вас уже есть VIP`});
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "vip"});
-        const button = user.hasFreeTrial?[{text: vipTryFree, callback_data: "try-free"}]:[{text: vipSubscribe, callback_data: "subscribe"}];
-        return msg.reply({text: `VIP Доступы...`, inline_keyboard: [button]});
+        const settings = await DefaultSettings.findOne();
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "choose-vip-plan"});
+        let buttons = [[{text: `24 часа ${settings.vipDailyPrice}р`, callback_data: "24h"}], [{text: `7 дней ${settings.vipWeeklyPrice}р`, callback_data: "7d"}], [{text: `1 месяц ${settings.vipMonthlyPrice}р`, callback_data: "1M"}], [{text: `Навсегда ${settings.vipForeverPrice}р`, callback_data: "forever"}]];
+        if (user.hasFreeTrial) buttons = [[{text: `${vipTryFree}(${settings.freeTrialSearches} поисков)`, callback_data: "try-free"}], ...buttons];
+        return msg.reply({text: `Выберите тарифный план`, inline_keyboard: buttons});
       }
       if (msg.text === "/start") return msg.reply({text: `Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
     }
