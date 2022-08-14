@@ -80,7 +80,7 @@ app.post("/renewals", async (req, res) => {
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
       await Users.findOneAndUpdate({"user.id": user.user.id}, {vip: false, vipUntilDate: null, vipExpired: moment().toDate});
-      if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "back-request-read" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town") await bot.sendMessage(user.user.id, `Срок подписки истек!`);
+      if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "back-request-read" && user.state.on !== "back-request-see-requests" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town") await bot.sendMessage(user.user.id, `Срок подписки истек!`);
     }
     return res.sendStatus(201);
   } catch (e) {
@@ -168,7 +168,7 @@ bot.on("message", async msg => {
     if (admin && admin.state.on === "admin-edit") return adminAdminsEditPage(msg, admin);
     await Users.findOneAndUpdate({"user.id": user.user.id}, {lastAction: moment().toDate()});
     if (user.left) await Users.findOneAndUpdate({"user.id": user.user.id}, {left: false, backDate: moment().toDate()});
-    if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "back-request-read" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town" && msg.text) {
+    if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "back-request-read" && user.state.on !== "back-request-see-requests" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town" && msg.text) {
       if (user.backRequests.length) {
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request-read"});
         return msg.reply({text: `У вас новые запросы на общение от ${user.backRequests.length!==1?"людей":"человека"}`, keyboard: [[backRequestOpen], [backRequestReject]]});
@@ -267,7 +267,7 @@ bot.on("callback_query", async query => {
     query.edit = editCallbackQuery(bot, query);
     const user = await Users.findOne({"user.id": query.from.id});
     if (!user) return;
-    if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "back-request-read" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town" && query.data === "vip-access") {
+    if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "back-request-read" && user.state.on !== "back-request-see-requests" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town" && query.data === "vip-access") {
       if (user.vip) return query.edit({text: `У вас уже есть VIP`});
       const settings = await DefaultSettings.findOne();
       await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "choose-vip-plan"});
