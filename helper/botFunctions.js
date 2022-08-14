@@ -31,7 +31,7 @@ module.exports = {
                 if (params.entities[i].user.is_premium) userData.is_premium = params.entities[i].user.is_premium;
                 if (params.entities[i].user.added_to_attachment_menu) userData.added_to_attachment_menu = params.entities[i].user.added_to_attachment_menu;
                 if (params.entities[i].user.can_join_groups) userData.can_join_groups = params.entities[i].user.can_join_groups;
-                if (params.entities[i].user.can_read_all_group_messages )userData.can_read_all_group_messages = params.entities[i].user.can_read_all_group_messages;
+                if (params.entities[i].user.can_read_all_group_messages) userData.can_read_all_group_messages = params.entities[i].user.can_read_all_group_messages;
                 if (params.entities[i].user.supports_inline_queries) userData.supports_inline_queries = params.entities[i].user.supports_inline_queries;
               }
               const nObj = {type: params.entities[i].type, offset: params.entities[i].offset, length: params.entities[i].length, url: params.entities[i].url, language: params.entities[i].language, custom_emoji_id: params.entities[i].custom_emoji_id};
@@ -39,6 +39,7 @@ module.exports = {
               messageEntities = [...messageEntities, nObj]
             }
           }
+          console.log(messageEntities);
           if (messageEntities.length) options.entities = messageEntities;
           if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendMessage(chat_id, text, options==={}?null:options);
