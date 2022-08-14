@@ -85,178 +85,181 @@ module.exports = {
   }, sendMsg: bot => async (params, chat_id) => {
     try {
       if (params.text) {
-        let options = params;
-        delete options._id;
-        delete options.methodName;
-        delete options.text;
-        if (!params.options.length) delete options.options;
-        if (!params.entities.length) delete options.entities;
-        if (!params.caption_entities.length) delete options.caption_entities;
-        if (!params.media.length) delete options.media;
-        if (!params.explanation_entities.length) delete options.explanation_entities;
-        console.log(options);
-        return await bot.sendMessage(chat_id, params.text, options);
+        const text = params.text;
+        params._id = null;
+        params.methodName = null;
+        params.text = null;
+        if (!params.options.length) params.options = null;
+        if (!params.entities.length) params.entities = null;
+        if (!params.caption_entities.length) params.caption_entities = null;
+        if (!params.media.length) params.media = null;
+        if (!params.explanation_entities.length) params.explanation_entities = null;
+        return await bot.sendMessage(chat_id, text, params);
       }
       if (params.photo) {
-        let options = params;
-        delete options._id;
-        delete options.methodName;
-        delete options.photo;
-        if (!params.options.length) delete options.options;
-        if (!params.entities.length) delete options.entities;
-        if (!params.caption_entities.length) delete options.caption_entities;
-        if (!params.media.length) delete options.media;
-        if (!params.explanation_entities.length) delete options.explanation_entities;
-        return await bot.sendPhoto(chat_id, params.photo, options);
+        const photo = params.photo;
+        params._id = null;
+        params.methodName = null;
+        params.photo = null;
+        if (!params.options.length) params.options = null;
+        if (!params.entities.length) params.entities = null;
+        if (!params.caption_entities.length) params.caption_entities = null;
+        if (!params.media.length) params.media = null;
+        if (!params.explanation_entities.length) params.explanation_entities = null;
+        return await bot.sendPhoto(chat_id, photo, params);
       }
       if (params.video) {
-        let options = params;
-        delete options._id;
-        delete options.methodName;
-        delete options.video;
-        if (!params.options.length) delete options.options;
-        if (!params.entities.length) delete options.entities;
-        if (!params.caption_entities.length) delete options.caption_entities;
-        if (!params.media.length) delete options.media;
-        if (!params.explanation_entities.length) delete options.explanation_entities;
-        return await bot.sendVideo(chat_id, params.video, options);
+        const video = params.video;
+        params._id = null;
+        params.methodName = null;
+        params.video = null;
+        if (!params.options.length) params.options = null;
+        if (!params.entities.length) params.entities = null;
+        if (!params.caption_entities.length) params.caption_entities = null;
+        if (!params.media.length) params.media = null;
+        if (!params.explanation_entities.length) params.explanation_entities = null;
+        return await bot.sendVideo(chat_id, video, params);
       }
       if (params.audio) {
-        let options = params;
-        delete options._id;
-        delete options.methodName;
-        delete options.audio;
-        if (!params.options.length) delete options.options;
-        if (!params.entities.length) delete options.entities;
-        if (!params.caption_entities.length) delete options.caption_entities;
-        if (!params.media.length) delete options.media;
-        if (!params.explanation_entities.length) delete options.explanation_entities;
-        return await bot.sendAudio(chat_id, params.audio, options);
+        const audio = params.audio;
+        params._id = null;
+        params.methodName = null;
+        params.audio = null;
+        if (!params.options.length) params.options = null;
+        if (!params.entities.length) params.entities = null;
+        if (!params.caption_entities.length) params.caption_entities = null;
+        if (!params.media.length) params.media = null;
+        if (!params.explanation_entities.length) params.explanation_entities = null;
+        return await bot.sendAudio(chat_id, audio, params);
       }
       if (params.animation) {
-        let options = params;
-        delete options._id;
-        delete options.methodName;
-        delete options.animation;
-        if (!params.options.length) delete options.options;
-        if (!params.entities.length) delete options.entities;
-        if (!params.caption_entities.length) delete options.caption_entities;
-        if (!params.media.length) delete options.media;
-        if (!params.explanation_entities.length) delete options.explanation_entities;
-        return await bot.sendAnimation(chat_id, params.animation, options);
+        const animation = params.animation;
+        params._id = null;
+        params.methodName = null;
+        params.animation = null;
+        if (!params.options.length) params.options = null;
+        if (!params.entities.length) params.entities = null;
+        if (!params.caption_entities.length) params.caption_entities = null;
+        if (!params.media.length) params.media = null;
+        if (!params.explanation_entities.length) params.explanation_entities = null;
+        return await bot.sendAnimation(chat_id, animation, params);
       }
       if (params.document) {
-        let options = params;
-        delete options._id;
-        delete options.methodName;
-        delete options.document;
-        if (!params.options.length) delete options.options;
-        if (!params.entities.length) delete options.entities;
-        if (!params.caption_entities.length) delete options.caption_entities;
-        if (!params.media.length) delete options.media;
-        if (!params.explanation_entities.length) delete options.explanation_entities;
-        return await bot.sendDocument(chat_id, params.document, options);
+        const document = params.document;
+        params._id = null;
+        params.methodName = null;
+        params.document = null;
+        if (!params.options.length) params.options = null;
+        if (!params.entities.length) params.entities = null;
+        if (!params.caption_entities.length) params.caption_entities = null;
+        if (!params.media.length) params.media = null;
+        if (!params.explanation_entities.length) params.explanation_entities = null;
+        return await bot.sendDocument(chat_id, document, params);
       }
       if (params.video_note) {
-        let options = params;
-        delete options._id;
-        delete options.methodName;
-        delete options.video_note;
-        if (!params.options.length) delete options.options;
-        if (!params.entities.length) delete options.entities;
-        if (!params.caption_entities.length) delete options.caption_entities;
-        if (!params.media.length) delete options.media;
-        if (!params.explanation_entities.length) delete options.explanation_entities;
-        return await bot.sendVideoNote(chat_id, params.video_note, options);
+        const video_note = params.video_note;
+        params._id = null;
+        params.methodName = null;
+        params.video_note = null;
+        if (!params.options.length) params.options = null;
+        if (!params.entities.length) params.entities = null;
+        if (!params.caption_entities.length) params.caption_entities = null;
+        if (!params.media.length) params.media = null;
+        if (!params.explanation_entities.length) params.explanation_entities = null;
+        return await bot.sendVideoNote(chat_id, video_note, params);
       }
       if (params.voice) {
-        let options = params;
-        delete options._id;
-        delete options.methodName;
-        delete options.voice;
-        if (!params.options.length) delete options.options;
-        if (!params.entities.length) delete options.entities;
-        if (!params.caption_entities.length) delete options.caption_entities;
-        if (!params.media.length) delete options.media;
-        if (!params.explanation_entities.length) delete options.explanation_entities;
-        return await bot.sendVoice(chat_id, params.voice, options);
+        const voice = params.voice;
+        params._id = null;
+        params.methodName = null;
+        params.voice = null;
+        if (!params.options.length) params.options = null;
+        if (!params.entities.length) params.entities = null;
+        if (!params.caption_entities.length) params.caption_entities = null;
+        if (!params.media.length) params.media = null;
+        if (!params.explanation_entities.length) params.explanation_entities = null;
+        return await bot.sendVoice(chat_id, voice, params);
       }
       if (params.phone_number) {
-        let options = params;
-        delete options._id;
-        delete options.methodName;
-        delete options.phone_number;
-        delete options.first_name;
-        if (!params.options.length) delete options.options;
-        if (!params.entities.length) delete options.entities;
-        if (!params.caption_entities.length) delete options.caption_entities;
-        if (!params.media.length) delete options.media;
-        if (!params.explanation_entities.length) delete options.explanation_entities;
-        return await bot.sendContact(chat_id, params.phone_number, params.first_name, options);
+        const phone_number = params.phone_number;
+        const first_name = params.first_name;
+        params._id = null;
+        params.methodName = null;
+        params.phone_number = null;
+        params.first_name = null;
+        if (!params.options.length) params.options = null;
+        if (!params.entities.length) params.entities = null;
+        if (!params.caption_entities.length) params.caption_entities = null;
+        if (!params.media.length) params.media = null;
+        if (!params.explanation_entities.length) params.explanation_entities = null;
+        return await bot.sendContact(chat_id, phone_number, first_name, params);
       }
       if (params.emoji) {
-        let options = params;
-        delete options._id;
-        delete options.methodName;
-        if (!params.options.length) delete options.options;
-        if (!params.entities.length) delete options.entities;
-        if (!params.caption_entities.length) delete options.caption_entities;
-        if (!params.media.length) delete options.media;
-        if (!params.explanation_entities.length) delete options.explanation_entities;
-        return await bot.sendDice(chat_id, options);
+        params._id = null;
+        params.methodName = null;
+        if (!params.options.length) params.options = null;
+        if (!params.entities.length) params.entities = null;
+        if (!params.caption_entities.length) params.caption_entities = null;
+        if (!params.media.length) params.media = null;
+        if (!params.explanation_entities.length) params.explanation_entities = null;
+        return await bot.sendDice(chat_id, params);
       }
       if (params.options.length) {
-        let options = params;
-        delete options._id;
-        delete options.methodName;
-        delete options.options;
-        delete options.question;
-        if (!params.options.length) delete options.options;
-        if (!params.entities.length) delete options.entities;
-        if (!params.caption_entities.length) delete options.caption_entities;
-        if (!params.media.length) delete options.media;
-        if (!params.explanation_entities.length) delete options.explanation_entities;
-        return await bot.sendPoll(chat_id, params.question, params.options, options);
+        const question = params.question;
+        const options = params.options;
+        params._id = null;
+        params.methodName = null;
+        params.options = null;
+        params.question = null;
+        if (!params.entities.length) params.entities = null;
+        if (!params.caption_entities.length) params.caption_entities = null;
+        if (!params.media.length) params.media = null;
+        if (!params.explanation_entities.length) params.explanation_entities = null;
+        return await bot.sendPoll(chat_id, question, options, params);
       }
       if (params.address) {
-        let options = params;
-        delete options._id;
-        delete options.methodName;
-        delete options.latitude;
-        delete options.longitude;
-        delete options.title;
-        delete options.address;
-        if (!params.options.length) delete options.options;
-        if (!params.entities.length) delete options.entities;
-        if (!params.caption_entities.length) delete options.caption_entities;
-        if (!params.media.length) delete options.media;
-        if (!params.explanation_entities.length) delete options.explanation_entities;
-        return await bot.sendVenue(chat_id, params.latitude, params.longitude, params.title, params.address, options);
+        const latitude = params.latitude;
+        const longitude = params.longitude;
+        const title = params.title;
+        const address = params.address;
+        params._id = null;
+        params.methodName = null;
+        params.latitude = null;
+        params.longitude = null;
+        params.title = null;
+        params.address = null;
+        if (!params.options.length) params.options = null;
+        if (!params.entities.length) params.entities = null;
+        if (!params.caption_entities.length) params.caption_entities = null;
+        if (!params.media.length) params.media = null;
+        if (!params.explanation_entities.length) params.explanation_entities = null;
+        return await bot.sendVenue(chat_id, latitude, longitude, title, address, params);
       }
       if (params.longitude) {
-        let options = params;
-        delete options._id;
-        delete options.methodName;
-        delete options.latitude;
-        delete options.longitude;
-        if (!params.options.length) delete options.options;
-        if (!params.entities.length) delete options.entities;
-        if (!params.caption_entities.length) delete options.caption_entities;
-        if (!params.media.length) delete options.media;
-        if (!params.explanation_entities.length) delete options.explanation_entities;
-        return await bot.sendLocation(chat_id, params.latitude, params.longitude, options);
+        const latitude = params.latitude;
+        const longitude = params.longitude;
+        params._id = null;
+        params.methodName = null;
+        params.latitude = null;
+        params.longitude = null;
+        if (!params.options.length) params.options = null;
+        if (!params.entities.length) params.entities = null;
+        if (!params.caption_entities.length) params.caption_entities = null;
+        if (!params.media.length) params.media = null;
+        if (!params.explanation_entities.length) params.explanation_entities = null;
+        return await bot.sendLocation(chat_id, latitude, longitude, params);
       }
       if (params.sticker) {
-        let options = params;
-        delete options._id;
-        delete options.methodName;
-        delete options.sticker;
-        if (!params.options.length) delete options.options;
-        if (!params.entities.length) delete options.entities;
-        if (!params.caption_entities.length) delete options.caption_entities;
-        if (!params.media.length) delete options.media;
-        if (!params.explanation_entities.length) delete options.explanation_entities;
-        return await bot.sendSticker(chat_id, params.sticker, options);
+        const sticker = params.sticker;
+        params._id = null;
+        params.methodName = null;
+        params.sticker = null;
+        if (!params.options.length) params.options = null;
+        if (!params.entities.length) params.entities = null;
+        if (!params.caption_entities.length) params.caption_entities = null;
+        if (!params.media.length) params.media = null;
+        if (!params.explanation_entities.length) params.explanation_entities = null;
+        return await bot.sendSticker(chat_id, sticker, params);
       }
     } catch (e) {
       console.log(e);
