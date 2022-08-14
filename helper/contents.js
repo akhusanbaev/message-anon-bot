@@ -80,7 +80,7 @@ module.exports = {
         return msg.reply({text: `Выберите свою страну`, keyboard: [...countriesData.map(c => [c]), [goBack]]});
       }
       await Users.findOneAndUpdate({"user.id": user.user.id}, {town: msg.text===skip?null:msg.text, "state.on": "home"});
-      return msg.reply({text: `Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
+      return msg.reply({text: `⚡️Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
     } catch (e) {
       console.log(e);
     }
@@ -96,23 +96,23 @@ module.exports = {
         let partner = searchResult.length?searchResult[0]:null;
         if (!partner) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
-          return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
+          return msg.reply({text: `🔎 Ищем собеседника...`, keyboard: [[cancelSearch]]});
         }
         if (partner.state.gender && partner.state.gender !== user.gender) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
-          return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
+          return msg.reply({text: `🔎 Ищем собеседника...`, keyboard: [[cancelSearch]]});
         }
         if (partner.state.age.length && !partner.state.age.includes(user.age)) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
-          return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
+          return msg.reply({text: `🔎 Ищем собеседника...`, keyboard: [[cancelSearch]]});
         }
         if (partner.state.country && !user.country.includes(partner.state.country)) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
-          return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
+          return msg.reply({text: `🔎 Ищем собеседника...`, keyboard: [[cancelSearch]]});
         }
         if (partner.state.town && user.town && partner.state.town !== user.town) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
-          return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
+          return msg.reply({text: `🔎 Ищем собеседника...`, keyboard: [[cancelSearch]]});
         }
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), totalDialogs: user.totalDialogs+1});
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString(), totalDialogs: partner.totalDialogs+1});
@@ -143,7 +143,15 @@ module.exports = {
       }
       if (msg.text === profile) {
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "profile-page"});
-        return msg.reply({text: `Мой профиль\n\nПол: ${user.gender === "male" ? chooseGenderMale : chooseGenderFemale}\nВозраст: ${user.age}\n\nVIP: ${user.vip ? user.vipUnlimited ? "Да(навсегда)" : user.trialSearches !== 0 ? `${user.trialSearches} пробных вип поисков` : user.vipUntilDate ? moment(user.vipUntilDate).format("MM/DD/YYYY") : "Нет" : "Нет"}\n\nВсего диалогов: ${user.totalDialogs}\nВсего сообщений: ${user.totalMessages}`, inline_keyboard: [[{text: profileEdit, callback_data: "edit"}], [{text: profileVip, callback_data: "vip"}]]});
+        return msg.reply({text: `🎭Мой профиль
+
+Пол: ${user.gender === "male" ? chooseGenderMale : chooseGenderFemale}
+Возраст: ${user.age}
+
+VIP: ${user.vip ? user.vipUnlimited ? "Да(навсегда)" : user.trialSearches !== 0 ? `${user.trialSearches} пробных вип поисков` : user.vipUntilDate ? moment(user.vipUntilDate).format("MM/DD/YYYY") : "Нет" : "Нет"}
+
+Всего диалогов: ${user.totalDialogs}
+Всего сообщений: ${user.totalMessages}`, inline_keyboard: [[{text: profileEdit, callback_data: "edit"}], [{text: profileVip, callback_data: "vip"}]]});
       }
       if (msg.text === vipAccess || msg.text === "/vip") {
         if (user.vip) return msg.reply({text: `У вас уже есть VIP`});

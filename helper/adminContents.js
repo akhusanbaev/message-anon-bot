@@ -71,6 +71,17 @@ module.exports = {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "admins"});
         return msg.reply({text: `Админы`, keyboard: [...admins.map(a => [`${a.user.first_name}///${a.user.id}`]), [adminCancelButton]]});
       }
+      if (msg.text.startsWith("/vip ")) {
+        const settings = await DefaultSettings.findOne();
+        const [plan, price] = msg.text.substring(5, msg.text.length).split(" ");
+        if (plan !== "24h" && plan !== "7d" && plan !== "1M" && plan !== "forever") return msg.reply({text: `Неправильно! Доступные планы:\n\n<code>24h</code>\n\n<code>7d</code>\n\n<code>1M</code>\n\n<code>forever</code>`});
+        if (plan === "24h") settings.vipDailyPrice = parseInt(price);
+        if (plan === "7d") settings.vipWeeklyPrice = parseInt(price);
+        if (plan === "1M") settings.vipMonthlyPrice = parseInt(price);
+        if (plan === "forever") settings.vipForeverPrice = parseInt(price);
+        await settings.save();
+        return msg.reply({text: `Цена тарифа изменена на сумму ${parseInt(price)}`});
+      }
     } catch (e) {
       console.log(e);
     }
