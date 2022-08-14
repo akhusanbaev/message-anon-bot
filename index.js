@@ -300,8 +300,12 @@ bot.on("callback_query", async query => {
   }
 });
 
-bot.on("my_chat_member", chatMemberUpdated => {
-  console.log(chatMemberUpdated);
+bot.on("my_chat_member", async chatMemberUpdated => {
+  try {
+    if (chatMemberUpdated.new_chat_member && chatMemberUpdated.new_chat_member.status && chatMemberUpdated.new_chat_member.status === "kicked") await Users.findOneAndUpdate({"user.id": chatMemberUpdated.new_chat_member.user.id}, {left: true, leftDate: moment().toDate()});
+  } catch (e) {
+    console.log(e);
+  }
 });
 
 async function start() {
