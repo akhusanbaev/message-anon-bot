@@ -284,6 +284,10 @@ bot.on("callback_query", async query => {
   }
 });
 
+bot.on("my_chat_member", chatMemberUpdated => {
+  console.log(chatMemberUpdated);
+});
+
 async function start() {
   try {
     await connect(config.mongoUri);
