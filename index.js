@@ -111,7 +111,6 @@ bot.on("message", async msg => {
     if (!msg.chat) return;
     if (msg.chat.type !== "private") return;
     msg.reply = replyMessage(bot, msg);
-    msg.send = sendMsg();
     const user = await Users.findOne({"user.id": msg.chat.id});
     const admin = await Admins.findOne({"user.id": msg.chat.id});
     if (!user) {

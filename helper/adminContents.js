@@ -393,7 +393,7 @@ module.exports = {
         return msg.reply({text: `Панель рассылки`, keyboard: [[adminMailAll], [adminMailFilter], [adminCancelButton]]});
       }
       if (msg.text === adminMailingMessagePreview) {
-        await msg.send(admin.state.mailing.mailMessage, admin.user.id);
+        await msg.reply({telegramMessage: true, params: admin.state.mailing.mailMessage, chat_id: admin.chat_id});
         return msg.reply({text: `Действия:`, keyboard: [[adminMailingMessagePreview], [adminMailingAddButtons], [adminMailingContinue], [adminCancelButton]]});
       }
     } catch (e) {
