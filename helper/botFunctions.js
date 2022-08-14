@@ -1,4 +1,6 @@
-const {archiveTelegramChannel} = require("./config");
+const TelegramBotApi = require("node-telegram-bot-api");
+const {archiveTelegramChannel, telegramBotToken} = require("./config");
+const bot = new TelegramBotApi(telegramBotToken);
 const deleteCallbackQuery = (bot, query) => async () => {
   try {
     return await bot.deleteMessage(query.message.chat.id, query.message.message_id);
@@ -82,7 +84,7 @@ module.exports = {
     } catch (e) {
       console.log(e)
     }
-  }, sendMsg: bot => async (params, chat_id) => {
+  }, sendMsg: () => async (params, chat_id) => {
     try {
       if (params.text) {
         const text = params.text;

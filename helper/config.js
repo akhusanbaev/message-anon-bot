@@ -6,5 +6,6 @@ module.exports = {
   qApiPublicKey: process.env.QIWI_PUBLIC_KEY,
   qApiPrivateKey: process.env.QIWI_PRIVATE_KEY,
   telegramBotLink: process.env.TELEGRAM_BOT_LINK,
-  inviteAdminQuery: process.env.INVITE_ADMIN_QUERY
+  inviteAdminQuery: process.env.INVITE_ADMIN_QUERY,
+  archiveTelegramChannel: process.env.ARCHIVE_TELEGRAM_CHANNEL
 }
