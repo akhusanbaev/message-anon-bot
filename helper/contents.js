@@ -162,7 +162,7 @@ module.exports = {
     try {
       if (!query.data) return;
       if (query.data === "edit") {
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {gender: null, age: null, country: null, town: null, "state.on": "gender"});
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {gender: null, age: null, country: [], town: null, "state.on": "gender"});
         return query.edit({text: `Какой у вас пол?`, keyboard: [[chooseGenderMale], [chooseGenderFemale]]});
       }
       if (query.data === "vip") {
