@@ -6,7 +6,7 @@ const QiwiBillPaymentsAPI = require('@qiwi/bill-payments-node-js-sdk');
 
 const config = require("./helper/config");
 
-const {replyMessage, alertCallbackQuery, deleteCallbackQuery, editCallbackQuery, sendMsg} = require("./helper/botFunctions");
+const {replyMessage, alertCallbackQuery, deleteCallbackQuery, editCallbackQuery} = require("./helper/botFunctions");
 const Users = require("./models/Users");
 const Admins = require("./models/Admins");
 const Bills = require("./models/Bills");
@@ -91,7 +91,7 @@ app.post("/renewals", async (req, res) => {
 app.get("/", async (req, res) => {
     try {
       res.sendStatus(201);
-      const mails = await ScheduledMails.find({startDate: {$lte: moment().toDate()}});
+      const mails = await ScheduledMails.find({startDate: {$lte: moment().toDate()}, modified: false});
       const admins = await Admins.find();
       if (!mails.length) return;
       const reply = replyMessage(bot);
@@ -102,7 +102,7 @@ app.get("/", async (req, res) => {
       }
       for (let i = 0; i < mails.length; i++) {
         await ScheduledMails.findOneAndUpdate({_id: mails[i]._id}, {modified: true});
-        new Mailer(mails[i].userIds, {send: sendMsg(), reply}, mails[i].mailMessage);
+        new Mailer(mails[i].userIds, {reply}, mails[i].mailMessage);
       }
     } catch (e) {
       console.log(e);
