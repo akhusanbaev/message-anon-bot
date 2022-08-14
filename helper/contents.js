@@ -15,8 +15,11 @@ const {choosingGenderValidator, choosingAgeValidator, choosingAgeIntValidator, c
   availableForVipOnlyValidator
 } = require("./validators");
 module.exports = {
-  welcomeMessage: async (msg, user) => {
+  welcomeMessage: async (msg, user, query) => {
     try {
+      if (!msg) {
+        return query.edit({text: `Какой у вас пол?`, keyboard: [[chooseGenderMale], [chooseGenderFemale]]});
+      }
       await msg.reply({text: `Добро пожаловать, <b>${user.user.first_name}</b>!`});
       return msg.reply({text: `Какой у вас пол?`, keyboard: [[chooseGenderMale], [chooseGenderFemale]]});
     } catch (e) {

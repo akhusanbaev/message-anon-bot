@@ -11,6 +11,7 @@ const Users = require("./models/Users");
 const Admins = require("./models/Admins");
 const Bills = require("./models/Bills");
 const ScheduledMails = require("./models/ScheduledMails");
+const Channels = require("./models/Channels");
 const {welcomeMessage, choosingGender, choosingAge, choosingTown, choosingCountry, homepage, profilePage,
   choosingVipPlan, randomPartnerPage, chatPage, endedChatPage, backRequestPage, filterFillGenderPage,
   filterFillAgePage, filterFillCountryPage, filterPartnerPage, filterFillTownPage, randomPartnerRestrictedPage,
@@ -118,12 +119,16 @@ bot.on("message", async msg => {
     if (!user) {
       const newUser = new Users({user: msg.from, startQuery: msg.text?msg.text.startsWith("/start ")?msg.text.substring(7, msg.text.length):"empty":"empty"});
       await newUser.save();
-      return welcomeMessage(msg, newUser);
-    }
-    if (msg.text && msg.text === "become admin") {
-      const newAdmin = new Admins({user: msg.from, boss: true});
-      await newAdmin.save();
-      return msg.reply({text: `/admin`});
+      const channels = await Channels.find();
+      if (!channels.length) return welcomeMessage(msg, newUser);
+      let buttons = [];
+      for (let i = 0; i < channels.length; i++) {
+        const c = channels[i];
+        if (!c.subscription) continue;
+        buttons.push([{text: c.name, url: c.link}]);
+      }
+      buttons.push([{text: `✅ Подписался`, callback_data: "subscribed"}])
+      return msg.reply({text: `Для начала вы должны подписаться на наши каналы!`, inline_keyboard: buttons})
     }
     if (admin && admin.state.on === "none" && msg.text && msg.text === "/admin") return adminMainPage(msg, admin);
     if (admin && admin.state.on === "home") return adminHomepage(msg, admin);
@@ -268,6 +273,17 @@ bot.on("callback_query", async query => {
     query.edit = editCallbackQuery(bot, query);
     const user = await Users.findOne({"user.id": query.from.id});
     if (!user) return;
+    if (query.data === "subscribed") {
+      const channels = await Channels.find();
+      for (let i = 0; i < channels.length; i++) {
+        const c = channels[i];
+        if (!c.subscription) continue;
+        const isMember = await bot.getChatMember(c.chat.id, query.from.id);
+        if (!isMember) return query.alert({text: `Вы еще не подписались на всех!`, showAlert: true});
+      }
+      await Users.findOneAndUpdate({"user.id": user.user.id}, {subscribed: true});
+      return welcomeMessage(null, user, query);
+    }
     if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "back-request-read" && user.state.on !== "back-request-see-requests" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town" && query.data === "vip-access") {
       if (user.vip) return query.edit({text: `У вас уже есть VIP`});
       const settings = await DefaultSettings.findOne();
