@@ -684,7 +684,11 @@ module.exports = {
     }
   }, adminBannerAddPage: async (msg, admin) => {
     try {
-      let params = {};
+      if (msg.text && msg.text === adminCancelButton) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminClose]]});
+      }
+      const params = {};
       if (msg.text) {
         params["state.banner.mailMessage.methodName"] = "sendMessage";
         params["state.banner.mailMessage.text"] = msg.text;
