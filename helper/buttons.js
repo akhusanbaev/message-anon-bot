@@ -71,6 +71,8 @@ module.exports = {
   adminBannerDone: `Готово!`,
   adminBannerReady: `Запустить(по настроенному фильтру)`,
 
+  adminBannerDelete: `Удалить`,
+
   adminAdminsDelete: `Удалить`,
 
   adminMailingAddButtons: `Доб. кнопки`,

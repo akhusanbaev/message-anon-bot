@@ -30,7 +30,8 @@ const {adminMainPage, adminHomepage, adminStatisticsFilterPage, adminStatisticsF
   adminBannerPage, adminBannerAddPage, adminBannerAddMessagePage, adminBannerAddMessageAddButtonsPage,
   adminBannerAddMessageContinuePage, adminBannerAddNamePage, adminBannerAddMessageFilterPage,
   adminBannerAddMessageFilterGenderPage, adminBannerAddMessageFilterAgePage, adminBannerAddMessageFilterCountryPage,
-  adminBannerAddMessageFilterTownPage, adminBannerAddMessageFilterContinuePage, adminAdminsPage, adminAdminsEditPage
+  adminBannerAddMessageFilterTownPage, adminBannerAddMessageFilterContinuePage, adminAdminsPage, adminAdminsEditPage,
+  adminBannerEditPage
 } = require("./helper/adminContents");
 const Mailer = require("./helper/Mailer");
 
@@ -150,6 +151,7 @@ bot.on("message", async msg => {
     if (admin && admin.state.on === "channels-add-admin") return adminChannelsAddAdminPage(msg, admin);
     if (admin && admin.state.on === "channels-edit") return adminChannelsEditPage(msg, admin);
     if (admin && admin.state.on === "banner") return adminBannerPage(msg, admin);
+    if (admin && admin.state.on === "banner-edit") return adminBannerEditPage(msg, admin);
     if (admin && admin.state.on === "banner-add-name") return adminBannerAddNamePage(msg, admin);
     if (admin && admin.state.on === "banner-add") return adminBannerAddPage(msg, admin);
     if (admin && admin.state.on === "banner-add-message") return adminBannerAddMessagePage(msg, admin);

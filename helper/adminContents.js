@@ -13,7 +13,8 @@ const {adminStatistics, adminMailing, adminFreeTrialSearchesCount, adminChannels
   adminCancelButton, adminStatisticsFilterCountry, adminStatisticsFilterDoesntMatter, adminMailAll, adminMailFilter,
   adminMailingAddButtons, adminMailingContinue, adminMailingMessagePreview, adminMailingAllMessageSchedule,
   adminMailingAllMessageStart, adminChannelsAddChannel, adminChannelsEditSubscriptions, adminChannelsEditDelete,
-  adminBannerAdd, adminBannerSet, adminBannerFilter, adminBannerDone, adminBannerReady, adminAdminsDelete
+  adminBannerAdd, adminBannerSet, adminBannerFilter, adminBannerDone, adminBannerReady, adminAdminsDelete,
+  adminBannerDelete
 } = require("./buttons");
 const {countriesData} = require("./countries");
 const {telegramBotLink, inviteAdminQuery} = require("./config");
@@ -666,7 +667,25 @@ module.exports = {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "banner-add-name"});
         return msg.reply({text: `Добавление баннера\nНапишите название:`, keyboard: [[adminCancelButton]]});
       }
-
+      const ad = await Ads.findOne({name: msg.text});
+      await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "banner-edit", "state.bannerId": ad._id.toString()});
+      return msg.reply({text: `Баннер ${ad.name}`, keyboard: [[adminBannerDelete], [adminCancelButton]]});
+    } catch (e) {
+      console.log(e);
+    }
+  }, adminBannerEditPage: async (msg, admin) => {
+    try {
+      if (!msg.text) return;
+      if (msg.text === adminCancelButton) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminClose]]});
+      }
+      if (msg.text === adminBannerDelete) {
+        const ad = await Ads.findById(admin.state.bannerId);
+        await Ads.deleteOne({name: ad.name});
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", "state.bannerId": null});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminClose]]});
+      }
     } catch (e) {
       console.log(e);
     }
