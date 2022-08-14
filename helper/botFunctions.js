@@ -28,6 +28,7 @@ module.exports = {
           if (params.caption_entities.length) options.caption_entities = params.caption_entities;
           if (params.media.length) options.media = params.media;
           if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
+          if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendPhoto(chat_id, photo, options==={}?null:options);
         }
         if (params.video) {
@@ -38,6 +39,7 @@ module.exports = {
           if (params.caption_entities.length) options.caption_entities = params.caption_entities;
           if (params.media.length) options.media = params.media;
           if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
+          if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendVideo(chat_id, video, options==={}?null:options);
         }
         if (params.audio) {
@@ -48,6 +50,7 @@ module.exports = {
           if (params.caption_entities.length) options.caption_entities = params.caption_entities;
           if (params.media.length) options.media = params.media;
           if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
+          if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendAudio(chat_id, audio, options==={}?null:options);
         }
         if (params.animation) {
@@ -58,6 +61,7 @@ module.exports = {
           if (params.caption_entities.length) options.caption_entities = params.caption_entities;
           if (params.media.length) options.media = params.media;
           if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
+          if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendAnimation(chat_id, animation, options==={}?null:options);
         }
         if (params.document) {
@@ -68,6 +72,7 @@ module.exports = {
           if (params.caption_entities.length) options.caption_entities = params.caption_entities;
           if (params.media.length) options.media = params.media;
           if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
+          if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendDocument(chat_id, document, options==={}?null:options);
         }
         if (params.video_note) {
@@ -78,6 +83,7 @@ module.exports = {
           if (params.caption_entities.length) options.caption_entities = params.caption_entities;
           if (params.media.length) options.media = params.media;
           if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
+          if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendVideoNote(chat_id, video_note, options==={}?null:options);
         }
         if (params.voice) {
@@ -88,6 +94,7 @@ module.exports = {
           if (params.caption_entities.length) options.caption_entities = params.caption_entities;
           if (params.media.length) options.media = params.media;
           if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
+          if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendVoice(chat_id, voice, options==={}?null:options);
         }
         if (params.phone_number) {
@@ -99,6 +106,7 @@ module.exports = {
           if (params.caption_entities.length) options.caption_entities = params.caption_entities;
           if (params.media.length) options.media = params.media;
           if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
+          if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendContact(chat_id, phone_number, first_name, options==={}?null:options);
         }
         if (params.emoji) {
@@ -109,6 +117,7 @@ module.exports = {
           if (params.caption_entities.length) options.caption_entities = params.caption_entities;
           if (params.media.length) options.media = params.media;
           if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
+          if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendDice(chat_id, options==={}?null:options);
         }
         if (params.options.length) {
@@ -120,6 +129,7 @@ module.exports = {
           if (params.caption_entities.length) opts.caption_entities = params.caption_entities;
           if (params.media.length) opts.media = params.media;
           if (params.explanation_entities.length) opts.explanation_entities = params.explanation_entities;
+          if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendPoll(chat_id, question, options, opts==={}?null:opts);
         }
         if (params.address) {
@@ -133,6 +143,7 @@ module.exports = {
           if (params.caption_entities.length) options.caption_entities = params.caption_entities;
           if (params.media.length) options.media = params.media;
           if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
+          if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendVenue(chat_id, latitude, longitude, title, address, options==={}?null:options);
         }
         if (params.longitude) {
@@ -144,6 +155,7 @@ module.exports = {
           if (params.caption_entities.length) options.caption_entities = params.caption_entities;
           if (params.media.length) options.media = params.media;
           if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
+          if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendLocation(chat_id, latitude, longitude, options==={}?null:options);
         }
         if (params.sticker) {
@@ -154,6 +166,7 @@ module.exports = {
           if (params.caption_entities.length) options.caption_entities = params.caption_entities;
           if (params.media.length) options.media = params.media;
           if (params.explanation_entities.length) options.explanation_entities = params.explanation_entities;
+          if (params.reply_markup) options.reply_markup = params.reply_markup;
           return await bot.sendSticker(chat_id, sticker, options==={}?null:options);
         }
         return;
