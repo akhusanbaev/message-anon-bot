@@ -3,7 +3,7 @@ const Users = require("./../models/Users");
 const Bills = require("./../models/Bills");
 const DefaultSettings = require("./../models/DefaultSettings");
 const {chooseGenderMale, chooseGenderFemale, goBack, skip, randomPartner, searchByCity, chatRestricted, profile,
-  vipAccess, profileEdit, profileVip, vipTryFree, vipSubscribe, cancelSearch, endDialog, backToMenu, fillGender, fillAge,
+  vipAccess, profileEdit, profileVip, vipTryFree, cancelSearch, endDialog, backToMenu, fillGender, fillAge,
   fillCountry, fillTown, fillSearch, doesntMatter, filterBack, fillExit, backRequestsExit, backRequestOpen,
   backRequestReject, backRequestStartChat, backRequestSkip, countryReady
 } = require("./buttons");
@@ -166,10 +166,12 @@ module.exports = {
         return query.edit({text: `Какой у вас пол?`, keyboard: [[chooseGenderMale], [chooseGenderFemale]]});
       }
       if (query.data === "vip") {
-        if (user.vip) return query.alert({text: `У вас уже есть VIP`, showAlert: true});
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "vip"});
-        const button = user.hasFreeTrial?[{text: vipTryFree, callback_data: "try-free"}]:[{text: vipSubscribe, callback_data: "subscribe"}];
-        return query.edit({text: `VIP Доступы...`, inline_keyboard: [button]});
+        if (user.vip) return query.edit({text: `У вас уже есть VIP`});
+        const settings = await DefaultSettings.findOne();
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "choose-vip-plan"});
+        let buttons = [[{text: `24 часа ${settings.vipDailyPrice}р`, callback_data: "24h"}], [{text: `7 дней ${settings.vipWeeklyPrice}р`, callback_data: "7d"}], [{text: `1 месяц ${settings.vipMonthlyPrice}р`, callback_data: "1M"}], [{text: `Навсегда ${settings.vipForeverPrice}р`, callback_data: "forever"}]];
+        if (user.hasFreeTrial) buttons = [[{text: `${vipTryFree}(${settings.freeTrialSearches} поисков)`, callback_data: "try-free"}], ...buttons];
+        return query.edit({text: `Выберите тарифный план`, inline_keyboard: buttons});
       }
     } catch (e) {
       console.log(e);
