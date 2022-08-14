@@ -15,15 +15,15 @@ module.exports = {
       if (telegramMessage) {
         if (params.text) {
           const text = params.text;
-          params._id = null;
-          params.methodName = null;
-          params.text = null;
-          if (!params.options.length) params.options = null;
-          if (!params.entities.length) params.entities = null;
-          if (!params.caption_entities.length) params.caption_entities = null;
-          if (!params.media.length) params.media = null;
-          if (!params.explanation_entities.length) params.explanation_entities = null;
-          return await bot.sendMessage(chat_id, text, params);
+          // params._id = null;
+          // params.methodName = null;
+          // params.text = null;
+          // if (!params.options.length) params.options = null;
+          // if (!params.entities.length) params.entities = null;
+          // if (!params.caption_entities.length) params.caption_entities = null;
+          // if (!params.media.length) params.media = null;
+          // if (!params.explanation_entities.length) params.explanation_entities = null;
+          return await bot.sendMessage(chat_id, text);
         }
         if (params.photo) {
           const photo = params.photo;
