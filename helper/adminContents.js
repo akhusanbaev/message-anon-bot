@@ -424,7 +424,7 @@ module.exports = {
         for (let i = 0; i < users.length; i++) {userIds = [...userIds, users[i]._id.toString()];}
         new Mailer(userIds, msg, admin.state.mailing.mailMessage);
         await msg.reply({text: `Рассылка началась`});
-        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", $set: {"state.mailing": {}}});
         return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminClose]]});
       }
       if (msg.text === adminMailingAllMessageSchedule) {
@@ -453,7 +453,7 @@ module.exports = {
       for (let i = 0; i < users.length; i++) {userIds = [...userIds, users[i]._id.toString()];}
       const newScheduledMail = new ScheduledMails({mailMessage: admin.state.mailing.mailMessage, startDate: moment(msg.text, "MM/DD/YYYY HH:mm").toDate(), userIds});
       await newScheduledMail.save();
-      await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", $set: {mailing: null}});
+      await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", $set: {"state.mailing": {}}});
       return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminClose]]});
     } catch (e) {
       console.log(e);
