@@ -287,6 +287,7 @@ module.exports = {
       if (msg.text === filterBack) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-filter-partner"});
       if (msg.text === chooseGenderMale) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.gender": "male", "state.on": "search-filter-partner"});
       if (msg.text === chooseGenderFemale) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.gender": "female", "state.on": "search-filter-partner"});
+      user = await Users.findOne({"user.id": user.user.id});
       return msg.reply({text: `Заданные параметры:\nПол: ${user.state.gender==="male"?"Мужской":user.state.gender==="female"?"Женский":"Без разницы"}\nВозраст: ${user.state.age || "Без разницы"}\nСтрана: ${user.state.country || "Без разницы"}\nГород: ${user.state.town || "Без разницы"}`, keyboard: [[fillSearch], [fillGender], [fillAge], [fillCountry], [fillTown]]});
     } catch (e) {
       console.log(e);
@@ -296,6 +297,7 @@ module.exports = {
       if (!msg.text) return unknownCommandValidator(msg);
       if (msg.text === doesntMatter) {
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.age": [], "state.on": "search-filter-partner"});
+        user = await Users.findOne({"user.id": user.user.id});
         return msg.reply({text: `Заданные параметры:\nПол: ${user.state.gender==="male"?"Мужской":user.state.gender==="female"?"Женский":"Без разницы"}\nВозраст: ${user.state.age || "Без разницы"}\nСтрана: ${user.state.country || "Без разницы"}\nГород: ${user.state.town || "Без разницы"}`, keyboard: [[fillSearch], [fillGender], [fillAge], [fillCountry], [fillTown]]});
       }
       if (msg.text === filterBack) {
@@ -308,13 +310,15 @@ module.exports = {
         if (!Number(msg.text.split("-")[1])) return wrongAgeFillingValidator(msg);
         if (Number(msg.text.split("-")[1]) < Number(msg.text.split("-")[0])) return sequenceErrorValidator(msg);
         if (Number(msg.text.split("-")[1]) === Number(msg.text.split("-")[0])) return wrongAgeFillingValidator(msg);
-        let value = []
+        let value = [];
         for (let i = msg.text.split("-").map(v => Number(v))[0]; i <= msg.text.split("-").map(v => Number(v))[1]; i++) {value = [...value, i];}
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-filter-partner", "state.age": value});
+        user = await Users.findOne({"user.id": user.user.id});
         return msg.reply({text: `Заданные параметры:\nПол: ${user.state.gender==="male"?"Мужской":user.state.gender==="female"?"Женский":"Без разницы"}\nВозраст: ${user.state.age || "Без разницы"}\nСтрана: ${user.state.country || "Без разницы"}\nГород: ${user.state.town || "Без разницы"}`, keyboard: [[fillSearch], [fillGender], [fillAge], [fillCountry], [fillTown]]});
       }
       if (!Number(msg.text)) return wrongAgeFillingValidator(msg);
       await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-filter-partner", "state.age": [Number(msg.text)]});
+      user = await Users.findOne({"user.id": user.user.id});
       return msg.reply({text: `Заданные параметры:\nПол: ${user.state.gender==="male"?"Мужской":user.state.gender==="female"?"Женский":"Без разницы"}\nВозраст: ${user.state.age || "Без разницы"}\nСтрана: ${user.state.country || "Без разницы"}\nГород: ${user.state.town || "Без разницы"}`, keyboard: [[fillSearch], [fillGender], [fillAge], [fillCountry], [fillTown]]});
     } catch (e) {
       console.log(e);
@@ -325,6 +329,7 @@ module.exports = {
       if (msg.text === doesntMatter) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.country": null, "state.on": "search-filter-partner"});
       if (msg.text === filterBack) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-filter-partner"});
       if (countriesData.includes(msg.text)) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.country": msg.text, "state.on": "search-filter-partner"});
+      user = await Users.findOne({"user.id": user.user.id});
       return msg.reply({text: `Заданные параметры:\nПол: ${user.state.gender==="male"?"Мужской":user.state.gender==="female"?"Женский":"Без разницы"}\nВозраст: ${user.state.age || "Без разницы"}\nСтрана: ${user.state.country || "Без разницы"}\nГород: ${user.state.town || "Без разницы"}`, keyboard: [[fillSearch], [fillGender], [fillAge], [fillCountry], [fillTown]]});
     } catch (e) {
       console.log(e);
@@ -335,6 +340,7 @@ module.exports = {
       if (msg.text === doesntMatter) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.town": null, "state.on": "search-filter-partner"});
       if (msg.text === filterBack) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-filter-partner"});
       if (msg.text !== doesntMatter && msg.text !== filterBack) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-filter-partner", "state.town": msg.text});
+      user = await Users.findOne({"user.id": user.user.id});
       return msg.reply({text: `Заданные параметры:\nПол: ${user.state.gender==="male"?"Мужской":user.state.gender==="female"?"Женский":"Без разницы"}\nВозраст: ${user.state.age || "Без разницы"}\nСтрана: ${user.state.country || "Без разницы"}\nГород: ${user.state.town || "Без разницы"}`, keyboard: [[fillSearch], [fillGender], [fillAge], [fillCountry], [fillTown]]});
     } catch (e) {
       console.log(e);
