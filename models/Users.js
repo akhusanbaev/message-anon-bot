@@ -33,6 +33,7 @@ const UserSchema = new Schema({
   reportsCount: {type: Number, required: true, default: 0},
   backRequests: {type: [UserBackRequest], required: true, default: []},
   watchlist: {type: [UserWatchlist], required: true, default: []},
+  subscribed: {type: Boolean, required: true, default: false},
   state: {type: UserState, required: true, default: {on: "gender"}}
 });
 module.exports = model("users", UserSchema);
