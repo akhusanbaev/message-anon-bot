@@ -1,5 +1,5 @@
 const {Schema} = require("mongoose");
-const {MessageEntity, InputMedia, InlineKeyboardMarkup} = require("./telegram");
+const {MessageEntity, InlineKeyboardMarkup} = require("./telegram");
 const MailingMessage = new Schema({
   methodName: {type: String},
   text: {type: String},
@@ -27,7 +27,6 @@ const MailingMessage = new Schema({
   voice: {type: String},
   video_note: {type: String},
   length: {type: Number},
-  media: {type: [InputMedia]},
   latitude: {type: Number},
   longitude: {type: Number},
   address: {type: String},
