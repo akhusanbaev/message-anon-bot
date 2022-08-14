@@ -129,7 +129,7 @@ module.exports = {
           if (params.caption_entities.length) opts.caption_entities = params.caption_entities;
           if (params.media.length) opts.media = params.media;
           if (params.explanation_entities.length) opts.explanation_entities = params.explanation_entities;
-          if (params.reply_markup) options.reply_markup = params.reply_markup;
+          if (params.reply_markup) opts.reply_markup = params.reply_markup;
           return await bot.sendPoll(chat_id, question, options, opts==={}?null:opts);
         }
         if (params.address) {

@@ -15,7 +15,7 @@ class Mailer {
       await settings.save();
       for (let i = 0; i < this.userIds.length; i++) {
         const user = await Users.findById(this.userIds[i]);
-        await this.msg.send({chat_id: user.user.id, ...this.mailMessage});
+        await this.msg.reply({chat_id: user.user.id, params: this.mailMessage, telegramMessage: true});
       }
       settings.isMailing = false;
       await settings.save();

@@ -404,14 +404,13 @@ module.exports = {
       if (!msg.text) return;
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "mailing-all-message"});
-        await msg.send({chat_id: admin.user.id, ...admin.state.mailing.mailMessage});
+        await msg.reply({telegramMessage: true, params: admin.state.mailing.mailMessage, chat_id: admin.user.id});
         return msg.reply({text: `Действия:`, keyboard: [[adminMailingMessagePreview], [adminMailingAddButtons], [adminMailingContinue], [adminCancelButton]]});
       }
       const arrays = msg.text.split("\n");
       let buttons = [];
       for (let i = 0; i < arrays.length; i++) {buttons = [...buttons, [{text: arrays[i].split(" - ")[0], url: arrays[i].split(" - ")[1]}]];}
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "mailing-all-message", "state.mailing.mailMessage.reply_markup.inline_keyboard": buttons});
-      await msg.send({chat_id: admin.user.id, ...admin.state.mailing.mailMessage});
       return msg.reply({text: `Действия:`, keyboard: [[adminMailingMessagePreview], [adminMailingAddButtons], [adminMailingContinue], [adminCancelButton]]});
     } catch (e) {
       console.log(e);
@@ -434,7 +433,7 @@ module.exports = {
       }
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "mailing-all-message"});
-        await msg.send({chat_id: admin.user.id, ...admin.state.mailing.mailMessage});
+        await msg.reply({telegramMessage: true, params: admin.state.mailing.mailMessage, chat_id: admin.user.id});
         return msg.reply({text: `Действия:`, keyboard: [[adminMailingMessagePreview], [adminMailingAddButtons], [adminMailingContinue], [adminCancelButton]]});
       }
     } catch (e) {
@@ -783,7 +782,7 @@ module.exports = {
       await msg.reply({text: `Превью:`});
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "banner-add-message", ...params});
       const nData = await Admins.findOne({"user.id": admin.user.id});
-      await msg.send({chat_id: nData.user.id, ...nData.state.mailing.mailMessage});
+      await msg.reply({chat_id: nData.user.id, params: nData.state.mailing.mailMessage, telegramMessage: true});
       return msg.reply({text: `Что дальше?`, keyboard: [[adminMailingAddButtons], [adminMailingContinue], [adminMailingMessagePreview], [adminCancelButton]]});
     } catch (e) {
       console.log(e);
@@ -804,7 +803,7 @@ module.exports = {
         return msg.reply({text: `Баннер готов!`, keyboard: [[adminBannerSet], [adminBannerFilter], [adminCancelButton]]});
       }
       if (msg.text === adminMailingMessagePreview) {
-        await msg.send({chat_id: admin.user.id, ...admin.state.banner.mailMessage});
+        await msg.reply({telegramMessage: true, chat_id: admin.user.id, params: admin.state.banner.mailMessage});
         return msg.reply({text: `Что дальше?`, keyboard: [[adminMailingAddButtons], [adminMailingContinue], [adminMailingMessagePreview], [adminCancelButton]]});
       }
     } catch (e) {
@@ -815,14 +814,14 @@ module.exports = {
       if (!msg.text) return;
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "banner-add-message"});
-        await msg.send({chat_id: admin.user.id, ...admin.state.banner.mailMessage});
+        await msg.reply({telegramMessage: true, chat_id: admin.user.id, params: admin.state.banner.mailMessage});
         return msg.reply({text: `Что дальше?`, keyboard: [[adminMailingAddButtons], [adminMailingContinue], [adminMailingMessagePreview], [adminCancelButton]]});
       }
       const arrays = msg.text.split("\n");
       let buttons = [];
       for (let i = 0; i < arrays.length; i++) {buttons = [...buttons, [{text: arrays[i].split(" - ")[0], url: arrays[i].split(" - ")[1]}]];}
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "banner-add-message", "state.banner.mailMessage.reply_markup.inline_keyboard": buttons});
-      await msg.send({chat_id: admin.user.id, ...admin.state.banner.mailMessage});
+      await msg.reply({telegramMessage: true, chat_id: admin.user.id, params: admin.state.banner.mailMessage});
       return msg.reply({text: `Действия:`, keyboard: [[adminMailingMessagePreview], [adminMailingAddButtons], [adminMailingContinue], [adminCancelButton]]});
     } catch (e) {
       console.log(e);
@@ -832,7 +831,7 @@ module.exports = {
       if (!msg.text) return;
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "banner-add-message"});
-        await msg.send({chat_id: admin.user.id, ...admin.state.banner.mailMessage});
+        await msg.reply({telegramMessage: true, chat_id: admin.user.id, params: admin.state.banner.mailMessage});
         return msg.reply({text: `Что дальше?`, keyboard: [[adminMailingAddButtons], [adminMailingContinue], [adminMailingMessagePreview], [adminCancelButton]]});
       }
       if (msg.text === adminBannerSet) {
@@ -854,7 +853,7 @@ module.exports = {
       if (!msg.text) return;
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "banner-add-message"});
-        await msg.send({chat_id: admin.user.id, ...admin.state.banner.mailMessage});
+        await msg.reply({telegramMessage: true, chat_id: admin.user.id, params: admin.state.banner.mailMessage});
         return msg.reply({text: `Что дальше?`, keyboard: [[adminMailingAddButtons], [adminMailingContinue], [adminMailingMessagePreview], [adminCancelButton]]});
       }
       if (msg.text === adminBannerDone) {
@@ -864,7 +863,7 @@ module.exports = {
         if (admin.state.filterCountry) params["state.banner.filter.country"] = admin.state.filterCountry; // TODO
         if (admin.state.filterTown) params["state.banner.filter.town"] = admin.state.filterTown; // TODO
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "banner-add-message-filter-continue", ...params});
-        await msg.send({chat_id: admin.user.id, ...admin.state.banner.mailMessage});
+        await msg.reply({telegramMessage: true, chat_id: admin.user.id, params: admin.state.banner.mailMessage});
         return msg.reply({text: `Баннер готов!`, keyboard: [[adminBannerReady], [adminCancelButton]]});
       }
       if (msg.text === adminStatisticsFilterGender) {
