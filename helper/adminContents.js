@@ -468,7 +468,7 @@ module.exports = {
       if (!isValid) return msg.reply({text: `Неверный формат!`});
       let userIds = [];
       const users = await Users.find({left: false, ...admin.state.mailing.filter});
-      for (let i = 0; i < users.length; i++) {userIds = [...userIds, users[i]._id.toString()];}
+      for (let i = 0; i < users.length; i++) {userIds = [...userIds, users[i].user.id];}
       const newScheduledMail = new ScheduledMails({mailMessage: admin.state.mailing.mailMessage, startDate: moment(msg.text, "MM/DD/YYYY HH:mm").toDate(), userIds});
       await newScheduledMail.save();
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", $set: {"state.mailing": {}}});
