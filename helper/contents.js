@@ -451,7 +451,7 @@ module.exports = {
       const partner = await Users.findById(user.backRequests[0].from);
       if (msg.text === backRequestStartChat) {
         if (partner.state.on !== "back-request-waiting") {
-          await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request-see-requests", $pull: {"backRequests.from": user.backRequests[0].from}});
+          await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request-see-requests", $pull: {backRequests: {from: user.backRequests[0].from}}});
           await msg.reply({text: `Пока вы думали этот пользователь уже передумал общаться`});
           if (user.backRequests.length === 1) {
             await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "home", "state.plan": null, "state.billId": null, "state.gender": null, "state.age": [], "state.country": null, "state.town": null, "state.user": null, "state.partner": null});
@@ -460,13 +460,13 @@ module.exports = {
           return msg.reply({text: `${user.backRequests[1].content}`, keyboard: [[backRequestStartChat], [backRequestSkip]]});
         }
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString(), "state.user": null});
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: user.backRequests[0].from, $pull: {"backRequests.from": user.backRequests[0].from}});
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: user.backRequests[0].from, $pull: {backRequests: {from: user.backRequests[0].from}}});
         await msg.reply({chatId: user.user.id, text: `Можете начинать общение с этим собеседником. Приятного общения. \n/stop - Закончить диалог${user.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
         await msg.reply({chatId: partner.user.id, text: `Собеседник принял ваш запрос на общение. Приятного общения. \n/stop - Закончить диалог${partner.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
         return;
       }
       if (msg.text === backRequestSkip) {
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {$pull: {"backRequests.from": user.backRequests[0].from}});
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {$pull: {backRequests: {from: user.backRequests[0].from}}});
         if (user.backRequests.length === 1) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "home", "state.plan": null, "state.billId": null, "state.gender": null, "state.age": [], "state.country": null, "state.town": null, "state.user": null, "state.partner": null});
           return msg.reply({text: `Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
