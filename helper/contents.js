@@ -5,7 +5,7 @@ const DefaultSettings = require("./../models/DefaultSettings");
 const {chooseGenderMale, chooseGenderFemale, goBack, skip, randomPartner, searchByCity, chatRestricted, profile,
   vipAccess, profileEdit, profileVip, vipTryFree, vipSubscribe, cancelSearch, endDialog, backToMenu, fillGender, fillAge,
   fillCountry, fillTown, fillSearch, doesntMatter, filterBack, fillExit, backRequestsExit, backRequestOpen,
-  backRequestReject, backRequestStartChat, backRequestSkip
+  backRequestReject, backRequestStartChat, backRequestSkip, countryReady
 } = require("./buttons");
 const {countriesData} = require("./countries");
 const {serverUrl} = require("./config");
@@ -52,9 +52,23 @@ module.exports = {
         await Users.findOneAndUpdate({"user.id": user.user.id}, {age: null, "state.on": "age"});
         return msg.reply({text: `Сколько вам лет?`, keyboard: [[goBack]]});
       }
+      if (msg.text === countryReady) {
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "town"});
+        return msg.reply({text: `Выберите свой город:`, keyboard: [[skip], [goBack]]});
+      }
+      if (msg.text.startsWith("❌ ")) {
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {$pull: {country: msg.text.substring(2, msg.text.length)}});
+        user.country.splice(user.country.findIndex(b => b === msg.text.substring(2, msg.text.length)), 1);
+        return msg.reply({text: `Ваши страны: ${user.country.join(", ")}`, keyboard: [...countriesData.map(c => {if (user.country.includes(c)) return [`❌ ${c}`];
+          return [c];}), [countryReady], [goBack]]});
+      }
       if (!countriesData.includes(msg.text)) return choosingCountryValidator(msg);
-      await Users.findOneAndUpdate({"user.id": user.user.id}, {country: msg.text, "state.on": "town"});
-      return msg.reply({text: `Введите свой город`, keyboard: [[skip], [goBack]]});
+      await Users.findOneAndUpdate({"user.id": user.user.id}, {$push: {country: msg.text}, "state.on": "country"});
+      user.country.push(msg.text)
+      return msg.reply({text: `Ваши страны: ${user.country.join(", ")}`, keyboard: [...countriesData.map(c => {
+        if (user.country.includes(c)) return [`❌ ${c}`]
+        return [c];
+      }), [countryReady], [goBack]]});
     } catch (e) {
       console.log(e);
     }
@@ -92,11 +106,11 @@ module.exports = {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
           return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
         }
-        if (partner.state.country && partner.state.country !== user.country) {
+        if (partner.state.country && !user.country.includes(partner.state.country)) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
           return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
         }
-        if (partner.state.town && user.town && partner.state.country !== user.town) {
+        if (partner.state.town && user.town && partner.state.town !== user.town) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
           return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
         }
@@ -107,21 +121,13 @@ module.exports = {
         return;
       }
       if (msg.text === searchByCity) {
-        if (!user.vip) {
-          await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "vip"});
-          const button = user.hasFreeTrial?[{text: vipTryFree, callback_data: "try-free"}]:[{text: vipSubscribe, callback_data: "subscribe"}];
-          return msg.reply({text: `Данная функция доступна только для VIP пользователей`, inline_keyboard: [button]});
-        }
+        if (!user.vip) return msg.reply({text: `Данная функция доступна только для VIP пользователей`});
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-filter-partner"});
         return msg.reply({text: `Заданные параметры:\nПол: ${user.state.gender || "Без разницы"}\nВозраст: ${user.state.age || "Без разницы"}\nСтрана: ${user.state.country || "Без разницы"}\nГород: ${user.state.town || "Без разницы"}`, keyboard: [[fillSearch], [fillGender], [fillAge], [fillCountry], [fillTown], [fillExit]]});
       }
       if (msg.text === chatRestricted) {
-        if (!user.vip) {
-          await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "vip"});
-          const button = user.hasFreeTrial?[{text: vipTryFree, callback_data: "try-free"}]:[{text: vipSubscribe, callback_data: "subscribe"}];
-          return msg.reply({text: `Данная функция доступна только для VIP пользователей`, inline_keyboard: [button]});
-        }
-        const searchResult = await Users.find({"state.on": "search-random-partner-restricted", gender: user.gender==="male"?"female":"male", "user.id": {$ne: user.user.id}, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: [user.country]}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
+        if (!user.vip) return msg.reply({text: `Данная функция доступна только для VIP пользователей`});
+        const searchResult = await Users.find({"state.on": "search-random-partner-restricted", gender: user.gender==="male"?"female":"male", "user.id": {$ne: user.user.id}, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: user.country}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
         const partner = searchResult.length?searchResult[0]:null;
         if (!partner) {
           if (user.trialSearches === 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner-restricted", trialSearches: 0});
@@ -141,12 +147,14 @@ module.exports = {
       }
       if (msg.text === vipAccess || msg.text === "/vip") {
         if (user.vip) return msg.reply({text: `У вас уже есть VIP`});
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "vip"});
-        const button = user.hasFreeTrial?[{text: vipTryFree, callback_data: "try-free"}]:[{text: vipSubscribe, callback_data: "subscribe"}];
-        return msg.reply({text: `VIP Доступы...`, inline_keyboard: [button]});
+        const settings = await DefaultSettings.findOne();
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "choose-vip-plan"});
+        let buttons = [[{text: `24 часа ${settings.vipDailyPrice}р`, callback_data: "24h"}], [{text: `7 дней ${settings.vipWeeklyPrice}р`, callback_data: "7d"}], [{text: `1 месяц ${settings.vipMonthlyPrice}р`, callback_data: "1M"}], [{text: `Навсегда ${settings.vipForeverPrice}р`, callback_data: "forever"}]];
+        if (user.hasFreeTrial) buttons = [[{text: `${vipTryFree}(${settings.freeTrialSearches} поисков)`, callback_data: "try-free"}], ...buttons];
+        return msg.reply({text: `Выберите тарифный план`, inline_keyboard: buttons});
       }
       if (msg.text === "/start") return msg.reply({text: `Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
-      return msg.reply({text: `Для использования бота пользуйся кнопками снизу или меню команд`});
+      return msg.reply({text: `Для использования бота пользуйся кнопками снизу`});
     } catch (e) {
       console.log(e);
     }
@@ -166,40 +174,15 @@ module.exports = {
     } catch (e) {
       console.log(e);
     }
-  }, vipPage: async (query, user) => {
-    try {
-      if (!query.data) return;
-      const settings = await DefaultSettings.findOne();
-      if (user.hasFreeTrial && query.data === "try-free") {
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {vip: true, trialSearches: settings.freeTrialSearches, hasFreeTrial: false, "state.on": "home"});
-        return query.edit({text: `Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
-      }
-      if (!user.hasFreeTrial && query.data === "subscribe") {
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "choose-vip-plan"});
-        return query.edit({text: `Выберите тарифный план`, inline_keyboard: [[{text: `24 часа ${settings.vipDailyPrice}р`, callback_data: "24h"}], [{text: `7 дней ${settings.vipWeeklyPrice}р`, callback_data: "7d"}], [{text: `1 месяц ${settings.vipMonthlyPrice}р`, callback_data: "1M"}], [{text: `Навсегда ${settings.vipForeverPrice}р`, callback_data: "forever"}]]});
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  }, chatVipPage: async (query, user) => {
-    try {
-      if (!query.data) return;
-      const settings = await DefaultSettings.findOne();
-      if (user.hasFreeTrial && query.data === "try-free") {
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {vip: true, trialSearches: settings.freeTrialSearches, hasFreeTrial: false, "state.on": "chat"});
-        return query.edit({text: `Можете продолжать общение в чате:`});
-      }
-      if (!user.hasFreeTrial && query.data === "subscribe") {
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "choose-chat-vip-plan"});
-        return query.edit({text: `Выберите тарифный план`, inline_keyboard: [[{text: `24 часа ${settings.vipDailyPrice}р`, callback_data: "24h"}], [{text: `7 дней ${settings.vipWeeklyPrice}р`, callback_data: "7d"}], [{text: `1 месяц ${settings.vipMonthlyPrice}р`, callback_data: "1M"}], [{text: `Навсегда ${settings.vipForeverPrice}р`, callback_data: "forever"}]]});
-      }
-    } catch (e) {
-      console.log(e);
-    }
   }, choosingVipPlan: async (query, user, qiwiApi) => {
     try {
       if (!query.data) return;
       const settings = await DefaultSettings.findOne();
+      if (query.data === "try-free") {
+        if (!user.hasFreeTrial) return query.alert({text: "ERROR"});
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {vip: true, trialSearches: settings.freeTrialSearches, hasFreeTrial: false, "state.on": "home"});
+        return query.edit({text: `Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
+      }
       const newBill = new Bills({amount: query.data==="24h"?settings.vipDailyPrice:query.data==="7d"?settings.vipWeeklyPrice:query.data==="1M"?settings.vipMonthlyPrice:settings.vipForeverPrice, account: user._id.toString()});
       await newBill.save();
       const data = await qiwiApi.createBill(newBill._id.toString(), {amount: newBill.amount, currency: 'RUB', comment: 'New purchase from TestMessageAnonBot', expirationDateTime: newBill.expirationDateTime.toISOString(), account: newBill.account, successUrl: `${serverUrl}/invoices`});
@@ -212,6 +195,10 @@ module.exports = {
     try {
       if (!query.data) return;
       const settings = await DefaultSettings.findOne();
+      if (user.hasFreeTrial && query.data === "try-free") {
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {vip: true, trialSearches: settings.freeTrialSearches, hasFreeTrial: false, "state.on": "chat"});
+        return query.edit({text: `Можете продолжать общение в чате:`});
+      }
       const newBill = new Bills({amount: settings.vipDailyPrice, account: user._id.toString()});
       await newBill.save();
       const data = await qiwiApi.createBill(newBill._id.toString(), {amount: newBill.amount, currency: 'RUB', comment: 'New purchase from TestMessageAnonBot', expirationDateTime: newBill.expirationDateTime.toISOString(), account: newBill.account, successUrl: `${serverUrl}/invoices`});
@@ -255,7 +242,7 @@ module.exports = {
         if (user.state.age) otherParams.age = {$in: user.state.age};
         if (user.state.country) otherParams.country = user.state.country;
         if (user.state.town) otherParams.town = user.state.town;
-        const searchResult = await Users.find({"state.on": "search-random-partner", "user.id": {$ne: user.user.id}, ...otherParams, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: [user.country]}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
+        const searchResult = await Users.find({"state.on": "search-random-partner", "user.id": {$ne: user.user.id}, ...otherParams, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: user.country}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
         const partner = searchResult.length?searchResult[0]:null;
         if (!partner) {
           if (user.trialSearches === 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner", trialSearches: 0});
@@ -365,9 +352,12 @@ module.exports = {
         return;
       }
       if (msg.text && msg.text === "/vip") {
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat-vip"});
-        const button = user.hasFreeTrial?[{text: vipTryFree, callback_data: "try-free"}]:[{text: vipSubscribe, callback_data: "subscribe"}];
-        return msg.reply({text: `VIP Доступы...`, inline_keyboard: [button]});
+        if (user.vip) return msg.reply({text: `У вас уже есть VIP`});
+        const settings = await DefaultSettings.findOne();
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "choose-chat-vip-plan"});
+        let buttons = [[{text: `24 часа ${settings.vipDailyPrice}р`, callback_data: "24h"}], [{text: `7 дней ${settings.vipWeeklyPrice}р`, callback_data: "7d"}], [{text: `1 месяц ${settings.vipMonthlyPrice}р`, callback_data: "1M"}], [{text: `Навсегда ${settings.vipForeverPrice}р`, callback_data: "forever"}]];
+        if (user.hasFreeTrial) buttons = [[{text: `${vipTryFree}(${settings.freeTrialSearches} поисков)`, callback_data: "try-free"}], ...buttons];
+        return msg.reply({text: `Выберите тарифный план`, inline_keyboard: buttons});
       }
       await Users.findOneAndUpdate({"user.id": user.user.id}, {totalMessages: user.totalMessages+1});
       return msg.reply({chatId: partner.user.id, fromChatId: user.user.id, messageId: msg.message_id});
@@ -393,7 +383,7 @@ module.exports = {
         return msg.reply({text: `Введи текст запроса чтобы получатель понял, кто его оправил.\n\nПример:\nпривет, я Олег 22 года, случайно завершил диалог, давай продолжим?`, keyboard: [[backToMenu]]});
       }
       if (msg.text === "/next") {
-        const searchResult = await Users.find({"state.on": "search-random-partner", "user.id": {$ne: user.user.id}, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: [user.country]}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
+        const searchResult = await Users.find({"state.on": "search-random-partner", "user.id": {$ne: user.user.id}, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: user.country}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
         const partner = searchResult.length?searchResult[0]:null;
         if (!partner) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});

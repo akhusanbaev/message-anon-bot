@@ -6,6 +6,8 @@ module.exports = {
 
   skip: `Пропустить`,
 
+  countryReady: `Готово`,
+
   randomPartner: `Случайный собеседник`,
   searchByCity: `Поиск по городу`,
   chatRestricted: `Чат 18+`,

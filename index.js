@@ -34,6 +34,7 @@ const {adminMainPage, adminHomepage, adminStatisticsFilterPage, adminStatisticsF
   adminBannerEditPage
 } = require("./helper/adminContents");
 const Mailer = require("./helper/Mailer");
+const DefaultSettings = require("./models/DefaultSettings");
 
 const app = express();
 const bot = new TelegramBotApi(config.telegramBotToken);
@@ -187,7 +188,7 @@ bot.on("message", async msg => {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
           return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
         }
-        if (partner.state.country && partner.state.country !== user.country) {
+        if (partner.state.country && !user.country.includes(partner.state.country)) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
           return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
         }
@@ -216,7 +217,7 @@ bot.on("message", async msg => {
           const button = user.hasFreeTrial?[{text: vipTryFree, callback_data: "try-free"}]:[{text: vipSubscribe, callback_data: "subscribe"}];
           return msg.reply({text: `Данная функция доступна только для VIP пользователей`, inline_keyboard: [button]});
         }
-        const searchResult = await Users.find({"state.on": "search-random-partner-restricted", gender: user.gender==="male"?"female":"male", "user.id": {$ne: user.user.id}, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: [user.country]}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
+        const searchResult = await Users.find({"state.on": "search-random-partner-restricted", gender: user.gender==="male"?"female":"male", "user.id": {$ne: user.user.id}, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: user.country}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
         const partner = searchResult.length?searchResult[0]:null;
         if (!partner) {
           if (user.trialSearches === 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner-restricted", trialSearches: 0});
@@ -273,13 +274,14 @@ bot.on("callback_query", async query => {
     const user = await Users.findOne({"user.id": query.from.id});
     if (!user) return;
     if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town" && query.data === "vip-access") {
-      await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "vip"});
-      const button = user.hasFreeTrial?[{text: vipTryFree, callback_data: "try-free"}]:[{text: vipSubscribe, callback_data: "subscribe"}];
-      return query.edit({text: `VIP Доступы...`, inline_keyboard: [button]});
+      if (user.vip) return query.edit({text: `У вас уже есть VIP`});
+      const settings = await DefaultSettings.findOne();
+      await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "choose-vip-plan"});
+      let buttons = [[{text: `24 часа ${settings.vipDailyPrice}р`, callback_data: "24h"}], [{text: `7 дней ${settings.vipWeeklyPrice}р`, callback_data: "7d"}], [{text: `1 месяц ${settings.vipMonthlyPrice}р`, callback_data: "1M"}], [{text: `Навсегда ${settings.vipForeverPrice}р`, callback_data: "forever"}]];
+      if (user.hasFreeTrial) buttons = [[{text: `${vipTryFree}(${settings.freeTrialSearches} поисков)`, callback_data: "try-free"}], ...buttons];
+      return query.edit({text: `Выберите тарифный план`, inline_keyboard: buttons});
     }
-    if (user.state.on === "chat-vip") return chatVipPage(query, user);
     if (user.state.on === "profile-page") return profilePage(query, user);
-    if (user.state.on === "vip") return vipPage(query, user);
     if (user.state.on === "choose-vip-plan") return choosingVipPlan(query, user, qiwiApi);
     if (user.state.on === "choose-chat-vip-plan") return choosingChatVipPlan(query, user, qiwiApi);
   } catch (e) {

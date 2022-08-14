@@ -44,7 +44,6 @@ module.exports = {
           }
           if (messageEntities.length) options.entities = messageEntities;
           if (params.reply_markup) options.reply_markup = params.reply_markup;
-          console.log(options)
           return await bot.sendMessage(chat_id, text, options==={}?null:options);
         }
         if (params.photo) {

@@ -12,7 +12,7 @@ const UserSchema = new Schema({
   startQuery: {type: String, required: true, default: "empty"},
   gender: {type: String},
   age: {type: Number},
-  country: {type: String},
+  country: {type: [String]},
   town: {type: String},
   completedRegistration: {type: Date},
   editedProfile: {type: Date},
