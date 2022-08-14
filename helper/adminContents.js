@@ -337,11 +337,7 @@ module.exports = {
         params["state.mailing.mailMessage.latitude"] = msg.location.latitude;
         params["state.mailing.mailMessage.longitude"] = msg.location.longitude;
       }
-      console.log("PARAMS 1", params);
-      await msg.reply({text: `Превью:`});
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "mailing-all-message", ...params});
-      const a = await Admins.findOne({"user.id": admin.user.id});
-      await msg.send(a.state.mailing.mailMessage, a.user.id);
       return msg.reply({text: `Действия:`, keyboard: [[adminMailingMessagePreview], [adminMailingAddButtons], [adminMailingContinue], [adminCancelButton]]});
     } catch (e) {
       console.log(e);
@@ -397,7 +393,7 @@ module.exports = {
         return msg.reply({text: `Панель рассылки`, keyboard: [[adminMailAll], [adminMailFilter], [adminCancelButton]]});
       }
       if (msg.text === adminMailingMessagePreview) {
-        await msg.send({chat_id: admin.user.id, ...admin.state.mailing.mailMessage});
+        await msg.send(admin.state.mailing.mailMessage, admin.user.id);
         return msg.reply({text: `Действия:`, keyboard: [[adminMailingMessagePreview], [adminMailingAddButtons], [adminMailingContinue], [adminCancelButton]]});
       }
     } catch (e) {
