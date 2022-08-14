@@ -1,4 +1,3 @@
-const Users = require("./../models/Users");
 const DefaultSettings = require("./../models/DefaultSettings");
 const Admins = require("./../models/Admins");
 class Mailer {
@@ -14,8 +13,7 @@ class Mailer {
       settings.isMailing = true;
       await settings.save();
       for (let i = 0; i < this.userIds.length; i++) {
-        const user = await Users.findById(this.userIds[i]);
-        await this.msg.reply({chat_id: user.user.id, params: this.mailMessage, telegramMessage: true});
+        await this.msg.reply({chat_id: this.userIds[i], params: this.mailMessage, telegramMessage: true});
       }
       settings.isMailing = false;
       await settings.save();
