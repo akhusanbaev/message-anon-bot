@@ -76,7 +76,7 @@ module.exports = {
     try {
       if (!msg.text) return choosingTownValidator(msg);
       if (msg.text === goBack) {
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {country: null, "state.on": "country"});
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {country: [], "state.on": "country"});
         return msg.reply({text: `Выберите свою страну`, keyboard: [...countriesData.map(c => [c]), [goBack]]});
       }
       await Users.findOneAndUpdate({"user.id": user.user.id}, {town: msg.text===skip?null:msg.text, "state.on": "home"});
