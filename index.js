@@ -279,9 +279,7 @@ bot.on("callback_query", async query => {
         const c = channels[i];
         if (!c.subscription) continue;
         const isMember = await bot.getChatMember(c.chat.id, query.from.id);
-        console.log(isMember)
-        if (isMember) continue;
-        return query.alert({text: `Вы еще не подписались на всех!`, showAlert: true});
+        if (isMember.status === "left") return query.alert({text: `Вы еще не подписались на всех!`, showAlert: true});
       }
       await Users.findOneAndUpdate({"user.id": user.user.id}, {subscribed: true});
       return welcomeMessage(null, user, query);
