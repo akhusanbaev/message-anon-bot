@@ -99,7 +99,7 @@ app.get("/", async (req, res) => {
       }
       for (let i = 0; i < mails.length; i++) {
         await ScheduledMails.findOneAndUpdate({_id: mails[i]._id}, {modified: true});
-        new Mailer(mails[i].userIds, {send: sendMsg(bot), reply});
+        new Mailer(mails[i].userIds, {send: sendMsg(), reply}, mails[i].mailMessage);
       }
     } catch (e) {
       console.log(e);
