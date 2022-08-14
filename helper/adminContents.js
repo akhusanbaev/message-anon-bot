@@ -246,7 +246,7 @@ module.exports = {
       if (msg.text) {
         params["state.mailing.mailMessage.methodName"] = "sendMessage";
         params["state.mailing.mailMessage.text"] = msg.text;
-        params["state.mailing.mailMessage.entities"] = msg.entities;
+        if (msg.entities) params["state.mailing.mailMessage.entities"] = msg.entities;
       }
       if (msg.animation) {
         params["state.mailing.mailMessage.methodName"] = "sendAnimation";
@@ -337,6 +337,7 @@ module.exports = {
         params["state.mailing.mailMessage.latitude"] = msg.location.latitude;
         params["state.mailing.mailMessage.longitude"] = msg.location.longitude;
       }
+      console.log("PARAMS 1", params);
       await msg.reply({text: `Превью:`});
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "mailing-all-message", ...params});
       const a = await Admins.findOne({"user.id": admin.user.id});

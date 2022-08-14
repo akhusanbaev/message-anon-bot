@@ -94,6 +94,7 @@ module.exports = {
         if (!params.caption_entities.length) params.caption_entities = null;
         if (!params.media.length) params.media = null;
         if (!params.explanation_entities.length) params.explanation_entities = null;
+        console.log("PARAMS 2", params);
         return await bot.sendMessage(chat_id, text, params);
       }
       if (params.photo) {
