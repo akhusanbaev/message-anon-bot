@@ -159,6 +159,10 @@ module.exports = {
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "profile-page"});
         return msg.reply({text: `🎭 Мой профиль\n\nПол: ${user.gender === "male" ? chooseGenderMale : chooseGenderFemale}\nВозраст: ${user.age}\nСтраны: ${user.country.join(", ")}\n${user.town ? `Город: ${user.town}` : ""}\n\nVIP: ${user.vip ? user.vipUnlimited ? "Да(навсегда)" : user.trialSearches !== 0 ? `${user.trialSearches} пробных вип поисков` : user.vipUntilDate ? moment(user.vipUntilDate).format("MM/DD/YYYY") : "Нет" : "Нет"}\n\nВсего диалогов: ${user.totalDialogs}\nВсего сообщений: ${user.totalMessages}`, inline_keyboard: [[{text: profileEdit, callback_data: "edit"}], [{text: profileVip, callback_data: "vip"}]]});
       }
+      if (msg.text === rules) {
+        const settings = await DefaultSettings.findOne();
+        return msg.reply({text: settings.rulesText});
+      }
       if (msg.text === support) return msg.reply({text: `Помощь\nЕсли у тебя возник какой-либо вопрос, обращайся к <a href="https://t.me/example">администратору</a>.`, inline_keyboard: [[{text: `📩 Написать`, url: "https://t.me/example"}]]})
       if (msg.text === vipAccess || msg.text === "/vip") {
         if (user.vip) return msg.reply({text: `У вас уже есть VIP`});
@@ -399,8 +403,8 @@ module.exports = {
         if (partner.vip && partner.trialSearches === 0) partnerOptions = {vip: false, lastVipAccess: true};
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "ended-chat", "state.partner": user.partner, partner: null, ...userOptions});
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "ended-chat", "state.partner": partner.partner, partner: null, ...partnerOptions});
-        await msg.reply({chatId: user.user.id, text: `Вы закончили диалог с собеседником\n/next - Найти следующего\n/back - вернуть собеседника\n/report - пожаловаться на спам`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
-        await msg.reply({chatId: partner.user.id, text: `Ваш собеседник окончил диалог с вами\n/next - Найти следующего\n/back - вернуть собеседника\n/report - пожаловаться на спам`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
+        await msg.reply({chatId: user.user.id, text: `Вы закончили диалог с собеседником\n/next - Найти следующего\n/back - вернуть собеседника\n/report - пожаловаться на спам`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [searchByFourParams], [profile, vipAccess], [support, rules]]});
+        await msg.reply({chatId: partner.user.id, text: `Ваш собеседник окончил диалог с вами\n/next - Найти следующего\n/back - вернуть собеседника\n/report - пожаловаться на спам`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [searchByFourParams], [profile, vipAccess], [support, rules]]});
         return;
       }
       if (msg.text && msg.text === "/vip") {
