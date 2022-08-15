@@ -311,7 +311,7 @@ module.exports = {
       }
       if (msg.text === fillCountry) {
         fillField = "country";
-        params = {text: `Выберите страну:`, keyboard: [...countriesData.map(c => {if (user.state.country.includes(c)) return [`❌ ${c}`];
+        params = {text: `Выберите страну:`, keyboard: [...countriesData.map(c => {if (user.state.country && user.state.country.length && user.state.country.includes(c)) return [`❌ ${c}`];
           return [c];}), [doesntMatter], [filterBack]]};
       }
       if (msg.text === fillTown) {
