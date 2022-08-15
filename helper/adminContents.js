@@ -14,7 +14,7 @@ const {adminStatistics, adminMailing, adminFreeTrialSearchesCount, adminChannels
   adminMailingAddButtons, adminMailingContinue, adminMailingMessagePreview, adminMailingAllMessageSchedule,
   adminMailingAllMessageStart, adminChannelsAddChannel, adminChannelsEditSubscriptions, adminChannelsEditDelete,
   adminBannerAdd, adminBannerSet, adminBannerFilter, adminBannerDone, adminBannerReady, adminAdminsDelete,
-  adminBannerDelete
+  adminBannerDelete, searchByFourParams, support, rules
 } = require("./buttons");
 const {countriesData} = require("./countries");
 const {telegramBotLink, inviteAdminQuery} = require("./config");
@@ -32,7 +32,7 @@ module.exports = {
       if (!msg.text) return;
       if (msg.text === adminClose) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "none"});
-        return msg.reply({text: `Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
+        return msg.reply({text: `⚡️Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [searchByFourParams], [profile, vipAccess], [support, rules]]});
       }
       if (msg.text === adminStatistics) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "statistics"});
