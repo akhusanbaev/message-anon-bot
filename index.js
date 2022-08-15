@@ -74,7 +74,7 @@ app.post("/invoices", async (req, res) => {
     console.log(e);
   }
 });
-app.post("/renewals", async (req, res) => {
+app.get("/renewals", async (req, res) => {
   try {
     const users = await Users.find({vipUntilDate: {$exists: true, $lte: moment().toDate()}});
     if (!users.length) return res.sendStatus(201);
