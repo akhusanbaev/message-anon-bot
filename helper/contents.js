@@ -168,7 +168,7 @@ module.exports = {
         if (user.hasFreeTrial) buttons = [[{text: `${vipTryFree}(${settings.freeTrialSearches} поисков)`, callback_data: "try-free"}], ...buttons];
         return msg.reply({text: `Выберите тарифный план`, inline_keyboard: buttons});
       }
-      if (msg.text === "/start") return msg.reply({text: `Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
+      if (msg.text === "/start") return msg.reply({text: `⚡️Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [searchByFourParams], [profile, vipAccess], [support, rules]]});
       return msg.reply({text: `Для использования бота пользуйся кнопками снизу`});
     } catch (e) {
       console.log(e);

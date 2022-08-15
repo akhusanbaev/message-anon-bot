@@ -19,7 +19,9 @@ const {welcomeMessage, choosingGender, choosingAge, choosingTown, choosingCountr
 } = require("./helper/contents");
 const {randomPartner, searchByCity, chatRestricted, profile, vipAccess, cancelSearch, endDialog,
   vipTryFree, fillSearch, fillGender, fillAge, fillCountry, fillTown, fillExit,
-  chooseGenderMale, chooseGenderFemale, profileEdit, profileVip, backRequestOpen, backRequestReject, tryVip, support
+  chooseGenderMale, chooseGenderFemale, profileEdit, profileVip, backRequestOpen, backRequestReject, tryVip, support,
+  searchByFourParams,
+  rules
 } = require("./helper/buttons");
 const {adminMainPage, adminHomepage, adminStatisticsFilterPage, adminStatisticsFilterOpenPage,
   adminStatisticsFilterGenderPage, adminStatisticsFilterAgePage, adminStatisticsFilterCountryPage,
@@ -252,7 +254,7 @@ bot.on("message", async msg => {
         if (user.hasFreeTrial) buttons = [[{text: `${vipTryFree}(${settings.freeTrialSearches} поисков)`, callback_data: "try-free"}], ...buttons];
         return msg.reply({text: `Выберите тарифный план`, inline_keyboard: buttons});
       }
-      if (msg.text === "/start") return msg.reply({text: `Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]});
+      if (msg.text === "/start") return msg.reply({text: `⚡️Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [searchByFourParams], [profile, vipAccess], [support, rules]]});
     }
     if (user.state.on === "gender") return choosingGender(msg, user);
     if (user.state.on === "age") return choosingAge(msg, user);
