@@ -182,6 +182,14 @@ bot.on("message", async msg => {
         return msg.reply({text: `У вас новые запросы на общение от ${user.backRequests.length!==1?"людей":"человека"}`, keyboard: [[backRequestOpen], [backRequestReject]]});
       }
       if (msg.text === randomPartner) {
+        const firstSearchTry = await Users.findOne({"state.on": "search-random-partner-restricted", gender: {$ne: user.gender}});
+        if (firstSearchTry) {
+          await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: firstSearchTry._id.toString(), totalDialogs: user.totalDialogs+1});
+          await Users.findOneAndUpdate({"user.id": firstSearchTry.user.id}, {"state.on": "chat", partner: user._id.toString(), totalDialogs: partner.totalDialogs+1});
+          await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
+          await msg.reply({chatId: firstSearchTry.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
+          return;
+        }
         const searchResult = await Users.find({"state.on": "search-random-partner", "user.id": {$ne: user.user.id}}).sort("lastAction");
         let partner = searchResult.length?searchResult[0]:null;
         if (!partner) {
@@ -228,7 +236,7 @@ bot.on("message", async msg => {
       }
       if (msg.text === chatRestricted) {
         if (!user.vip) return msg.reply({text: `Данная функция доступна только для VIP пользователей`, inline_keyboard: [[{text: tryVip, callback_data: "vip-access"}]]});
-        const searchResult = await Users.find({"state.on": "search-random-partner-restricted", gender: user.gender==="male"?"female":"male", "user.id": {$ne: user.user.id}, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: user.country}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
+        const searchResult = await Users.find({"state.on": "search-random-partner", gender: user.gender==="male"?"female":"male", "user.id": {$ne: user.user.id}}).sort("lastAction");
         const partner = searchResult.length?searchResult[0]:null;
         if (!partner) {
           if (user.trialSearches === 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner-restricted", trialSearches: 0});
