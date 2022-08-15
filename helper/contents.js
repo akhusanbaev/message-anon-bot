@@ -475,7 +475,7 @@ module.exports = {
       const partner = await Users.findById(user.state.user);
       if (msg.text === backRequestsExit) {
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {$pull: {backRequests: {from: user._id.toString()}}});
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "home", "state.plan": null, "state.billId": null, "state.gender": null, "state.age": [], "state.country": null, "state.town": null, "state.user": null, "state.partner": null});
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "home", "state.plan": null, "state.billId": null, "state.gender": null, "state.age": [], "state.country": [], "state.town": null, "state.user": null, "state.partner": null});
         return msg.reply({text: `⚡️Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [searchByFourParams], [profile, vipAccess], [support, rules]]});
       }
     } catch (e) {
@@ -489,7 +489,7 @@ module.exports = {
         return msg.reply({text: `${user.backRequests[0].content}`, keyboard: [[backRequestStartChat], [backRequestSkip]]});
       }
       if (msg.text === backRequestReject) {
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {$set: {backRequests: []}, "state.on": "home", "state.plan": null, "state.billId": null, "state.gender": null, "state.age": [], "state.country": null, "state.town": null, "state.user": null, "state.partner": null});
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {$set: {backRequests: []}, "state.on": "home", "state.plan": null, "state.billId": null, "state.gender": null, "state.age": [], "state.country": [], "state.town": null, "state.user": null, "state.partner": null});
         return msg.reply({text: `⚡️Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [searchByFourParams], [profile, vipAccess], [support, rules]]});
       }
     } catch (e) {
@@ -504,7 +504,7 @@ module.exports = {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request-see-requests", $pull: {backRequests: {from: user.backRequests[0].from}}});
           await msg.reply({text: `Пока вы думали этот пользователь уже передумал общаться`});
           if (user.backRequests.length === 1) {
-            await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "home", "state.plan": null, "state.billId": null, "state.gender": null, "state.age": [], "state.country": null, "state.town": null, "state.user": null, "state.partner": null});
+            await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "home", "state.plan": null, "state.billId": null, "state.gender": null, "state.age": [], "state.country": [], "state.town": null, "state.user": null, "state.partner": null});
             return msg.reply({text: `⚡️Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [searchByFourParams], [profile, vipAccess], [support, rules]]});
           }
           return msg.reply({text: `${user.backRequests[1].content}`, keyboard: [[backRequestStartChat], [backRequestSkip]]});
@@ -518,7 +518,7 @@ module.exports = {
       if (msg.text === backRequestSkip) {
         await Users.findOneAndUpdate({"user.id": user.user.id}, {$pull: {backRequests: {from: user.backRequests[0].from}}});
         if (user.backRequests.length === 1) {
-          await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "home", "state.plan": null, "state.billId": null, "state.gender": null, "state.age": [], "state.country": null, "state.town": null, "state.user": null, "state.partner": null});
+          await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "home", "state.plan": null, "state.billId": null, "state.gender": null, "state.age": [], "state.country": [], "state.town": null, "state.user": null, "state.partner": null});
           return msg.reply({text: `⚡️Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [searchByFourParams], [profile, vipAccess], [support, rules]]});
         }
         return msg.reply({text: `${user.backRequests[1].content}`, keyboard: [[backRequestStartChat], [backRequestSkip]]});
