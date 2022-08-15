@@ -217,8 +217,8 @@ bot.on("message", async msg => {
         }
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), totalDialogs: user.totalDialogs+1});
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString(), totalDialogs: partner.totalDialogs+1});
-        await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${user.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
-        await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${partner.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
+        await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
+        await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
         return;
       }
       if (msg.text === searchByCity || msg.text === searchByFourParams) {
@@ -238,8 +238,8 @@ bot.on("message", async msg => {
         if (user.trialSearches === 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), trialSearches: 0, totalDialogs: user.totalDialogs+1});
         if (user.trialSearches > 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), trialSearches: user.trialSearches-1, totalDialogs: user.totalDialogs+1});
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString(), totalDialogs: partner.totalDialogs+1});
-        await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${user.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
-        await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${partner.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
+        await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
+        await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
         return;
       }
       if (msg.text === profile) {

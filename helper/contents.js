@@ -130,8 +130,8 @@ module.exports = {
         }
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), totalDialogs: user.totalDialogs+1});
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString(), totalDialogs: partner.totalDialogs+1});
-        await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${user.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
-        await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${partner.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
+        await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
+        await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
         return;
       }
       if (msg.text === searchByCity || msg.text === searchByFourParams) {
@@ -151,8 +151,8 @@ module.exports = {
         if (user.trialSearches === 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), trialSearches: 0, totalDialogs: user.totalDialogs+1});
         if (user.trialSearches > 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), trialSearches: user.trialSearches-1, totalDialogs: user.totalDialogs+1});
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString(), totalDialogs: partner.totalDialogs+1});
-        await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${user.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
-        await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${partner.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
+        await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
+        await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
         return;
       }
       if (msg.text === profile) {
@@ -296,8 +296,8 @@ module.exports = {
         if (user.trialSearches === 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), trialSearches: 0, totalDialogs: user.totalDialogs+1});
         if (user.trialSearches > 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), trialSearches: user.trialSearches-1, totalDialogs: user.totalDialogs+1});
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString(), totalDialogs: partner.totalDialogs+1});
-        await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${user.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
-        await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${partner.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
+        await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
+        await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
         return;
       }
       if (msg.text !== fillGender && msg.text !== fillAge && msg.text !== fillCountry && msg.text !== fillTown) return choosePossibleOptionValidator(msg);
@@ -443,8 +443,8 @@ module.exports = {
         }
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString()});
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString()});
-        await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${user.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
-        await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${partner.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
+        await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
+        await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
         return;
       }
       return true;
@@ -511,8 +511,8 @@ module.exports = {
         }
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString(), "state.user": null});
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: user.backRequests[0].from, $pull: {backRequests: {from: user.backRequests[0].from}}});
-        await msg.reply({chatId: user.user.id, text: `Можете начинать общение с этим собеседником. Приятного общения. \n/stop - Закончить диалог${user.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
-        await msg.reply({chatId: partner.user.id, text: `Собеседник принял ваш запрос на общение. Приятного общения. \n/stop - Закончить диалог${partner.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
+        await msg.reply({chatId: user.user.id, text: `Можете начинать общение с этим собеседником. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
+        await msg.reply({chatId: partner.user.id, text: `Собеседник принял ваш запрос на общение. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
         return;
       }
       if (msg.text === backRequestSkip) {
