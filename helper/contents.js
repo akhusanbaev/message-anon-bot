@@ -109,11 +109,22 @@ module.exports = {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
           return msg.reply({text: `🔎 Ищем собеседника...`, keyboard: [[cancelSearch]]});
         }
-        if (partner.state.country && !user.country.includes(partner.state.country)) {
+        if (partner.state.country.length) {
+          let isIncluded = false
+          for (let i = 0; i < partner.state.country.length; i++) {
+            const c = partner.state.country[i];
+            if (user.country.includes(c)) isIncluded = true;
+          }
+          if (!isIncluded) {
+            await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
+            return msg.reply({text: `🔎 Ищем собеседника...`, keyboard: [[cancelSearch]]});
+          }
+        }
+        if (partner.state.town && user.town && partner.state.town !== user.town) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
           return msg.reply({text: `🔎 Ищем собеседника...`, keyboard: [[cancelSearch]]});
         }
-        if (partner.state.town && user.town && partner.state.town !== user.town) {
+        if (partner.state.town && !user.town) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
           return msg.reply({text: `🔎 Ищем собеседника...`, keyboard: [[cancelSearch]]});
         }
@@ -272,8 +283,8 @@ module.exports = {
         let otherParams = {};
         if (user.state.gender) otherParams.gender = user.state.gender;
         if (user.state.age) otherParams.age = {$in: user.state.age};
-        if (user.state.country) otherParams.country = user.state.country;
-        if (user.state.town) otherParams.town = user.state.town;
+        if (user.state.country) otherParams.country = {$in: user.state.country};
+        if (user.state.town) otherParams.town = {$regex: user.state.town, $options: "i"};
         const searchResult = await Users.find({"state.on": "search-random-partner", "user.id": {$ne: user.user.id}, ...otherParams, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: user.country}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
         const partner = searchResult.length?searchResult[0]:null;
         if (!partner) {
@@ -299,7 +310,8 @@ module.exports = {
       }
       if (msg.text === fillCountry) {
         fillField = "country";
-        params = {text: `Выберите страну:`, keyboard: [...countriesData.map(c => [c]), [doesntMatter], [filterBack]]};
+        params = {text: `Выберите страну:`, keyboard: [...countriesData.map(c => {if (user.state.country.includes(c)) return [`❌ ${c}`];
+          return [c];}), [doesntMatter], [filterBack]]};
       }
       if (msg.text === fillTown) {
         fillField = "town";
@@ -356,9 +368,10 @@ module.exports = {
   }, filterFillCountryPage: async (msg, user) => {
     try {
       if (!msg.text) return wrongCountryFillingValidator(msg);
-      if (msg.text === doesntMatter) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.country": null, "state.on": "search-filter-partner"});
+      if (msg.text === doesntMatter) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.country": [], "state.on": "search-filter-partner"});
       if (msg.text === filterBack) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-filter-partner"});
-      if (countriesData.includes(msg.text)) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.country": msg.text, "state.on": "search-filter-partner"});
+      if (msg.text.startsWith("❌ ")) await Users.findOneAndUpdate({"user.id": user.user.id}, {$pull: {"state.country": msg.text.substring(2, msg.text.length)}});
+      if (countriesData.includes(msg.text)) await Users.findOneAndUpdate({"user.id": user.user.id}, {$push: {"state.country": msg.text}, "state.on": "search-filter-partner"});
       user = await Users.findOne({"user.id": user.user.id});
       return msg.reply({text: `Заданные параметры:\nПол: ${user.state.gender==="male"?"Мужской":user.state.gender==="female"?"Женский":"Без разницы"}\nВозраст: ${user.state.age || "Без разницы"}\nСтрана: ${user.state.country || "Без разницы"}\nГород: ${user.state.town || "Без разницы"}`, keyboard: [[fillSearch], [fillGender], [fillAge], [fillCountry], [fillTown], [fillExit]]});
     } catch (e) {

@@ -20,7 +20,7 @@ module.exports = {
     on: {type: String}, // search-filter-partner
     gender: {type: String},
     age: {type: [Number]}, //
-    country: {type: String},
+    country: {type: [String]},
     town: {type: String}
   }),
   UserStateBackRequest: new Schema({
