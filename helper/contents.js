@@ -134,10 +134,10 @@ module.exports = {
         await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог${partner.vip?"":"\n/vip - Получить VIP"}`, keyboard: [[endDialog]]});
         return;
       }
-      if (msg.text === searchByCity) {
+      if (msg.text === searchByCity || msg.text === searchByFourParams) {
         if (!user.vip) return msg.reply({text: `Данная функция доступна только для VIP пользователей`, inline_keyboard: [[{text: tryVip, callback_data: "vip-access"}]]});
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-filter-partner"});
-        return msg.reply({text: `Заданные параметры:\nПол: ${user.state.gender || "Без разницы"}\nВозраст: ${user.state.age || "Без разницы"}\nСтрана: ${user.state.country || "Без разницы"}\nГород: ${user.state.town || "Без разницы"}`, keyboard: [[fillSearch], [fillGender], [fillAge], [fillCountry], [fillTown], [fillExit]]});
+        return msg.reply({text: `Заданные параметры:\nПол: ${user.state.gender?user.state.gender==="male"?"Мужской":"Женский":"Без разницы"}\nВозраст: ${user.state.age || "Без разницы"}\nСтрана: ${user.state.country || "Без разницы"}\nГород: ${user.state.town || "Без разницы"}`, keyboard: [[fillSearch], [fillGender], [fillAge], [fillCountry], [fillTown], [fillExit]]});
       }
       if (msg.text === chatRestricted) {
         if (!user.vip) return msg.reply({text: `Данная функция доступна только для VIP пользователей`, inline_keyboard: [[{text: tryVip, callback_data: "vip-access"}]]});
