@@ -290,7 +290,7 @@ module.exports = {
         if (user.state.age) otherParams.age = {$in: user.state.age};
         if (user.state.country) otherParams.country = {$in: user.state.country};
         if (user.state.town) otherParams.town = {$regex: user.state.town, $options: "i"};
-        const searchResult = await Users.find({"state.on": "search-random-partner", "user.id": {$ne: user.user.id}, ...otherParams, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: user.country}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
+        const searchResult = await Users.find({"state.on": "search-random-partner", "user.id": {$ne: user.user.id}, ...otherParams}).sort("lastAction");
         const partner = searchResult.length?searchResult[0]:null;
         if (!partner) {
           if (user.trialSearches === 1) await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner", trialSearches: 0});
