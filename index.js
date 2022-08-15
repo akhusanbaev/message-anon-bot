@@ -185,7 +185,7 @@ bot.on("message", async msg => {
         const firstSearchTry = await Users.findOne({"state.on": "search-random-partner-restricted", gender: {$ne: user.gender}});
         if (firstSearchTry) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: firstSearchTry._id.toString(), totalDialogs: user.totalDialogs+1});
-          await Users.findOneAndUpdate({"user.id": firstSearchTry.user.id}, {"state.on": "chat", partner: user._id.toString(), totalDialogs: partner.totalDialogs+1});
+          await Users.findOneAndUpdate({"user.id": firstSearchTry.user.id}, {"state.on": "chat", partner: user._id.toString(), totalDialogs: firstSearchTry.totalDialogs+1});
           await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
           await msg.reply({chatId: firstSearchTry.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
           return;
