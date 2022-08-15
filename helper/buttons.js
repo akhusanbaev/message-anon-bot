@@ -54,6 +54,7 @@ module.exports = {
   adminAdBanner: `Рекламные баннеры`,
   adminLinkForAdmins: `Ссылка для добавления админов`,
   adminAdmins: `Администраторы`,
+  adminRulesText: `Текст правил`,
   adminClose: `Закрыть`,
 
   adminStatisticsFilter: `Фильтр`,
