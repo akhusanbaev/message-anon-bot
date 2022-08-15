@@ -19,7 +19,7 @@ const {welcomeMessage, choosingGender, choosingAge, choosingTown, choosingCountr
 } = require("./helper/contents");
 const {randomPartner, searchByCity, chatRestricted, profile, vipAccess, cancelSearch, endDialog,
   vipTryFree, fillSearch, fillGender, fillAge, fillCountry, fillTown, fillExit,
-  chooseGenderMale, chooseGenderFemale, profileEdit, profileVip, backRequestOpen, backRequestReject, tryVip
+  chooseGenderMale, chooseGenderFemale, profileEdit, profileVip, backRequestOpen, backRequestReject, tryVip, support
 } = require("./helper/buttons");
 const {adminMainPage, adminHomepage, adminStatisticsFilterPage, adminStatisticsFilterOpenPage,
   adminStatisticsFilterGenderPage, adminStatisticsFilterAgePage, adminStatisticsFilterCountryPage,
@@ -193,11 +193,22 @@ bot.on("message", async msg => {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
           return msg.reply({text: `🔎 Ищем собеседника...`, keyboard: [[cancelSearch]]});
         }
-        if (partner.state.country && !user.country.includes(partner.state.country)) {
+        if (partner.state.country.length) {
+          let isIncluded = false
+          for (let i = 0; i < partner.state.country.length; i++) {
+            const c = partner.state.country[i];
+            if (user.country.includes(c)) isIncluded = true;
+          }
+          if (!isIncluded) {
+            await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
+            return msg.reply({text: `🔎 Ищем собеседника...`, keyboard: [[cancelSearch]]});
+          }
+        }
+        if (partner.state.town && user.town && partner.state.town !== user.town) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
           return msg.reply({text: `🔎 Ищем собеседника...`, keyboard: [[cancelSearch]]});
         }
-        if (partner.state.town && user.town && partner.state.town !== user.town) {
+        if (partner.state.town && !user.town) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
           return msg.reply({text: `🔎 Ищем собеседника...`, keyboard: [[cancelSearch]]});
         }
@@ -230,8 +241,9 @@ bot.on("message", async msg => {
       }
       if (msg.text === profile) {
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "profile-page"});
-        return msg.reply({text: `🎭 Мой профиль\n\nПол: ${user.gender === "male" ? chooseGenderMale : chooseGenderFemale}\nВозраст: ${user.age}\n\nVIP: ${user.vip ? user.vipUnlimited ? "Да(навсегда)" : user.trialSearches !== 0 ? `${user.trialSearches} пробных вип поисков` : user.vipUntilDate ? moment(user.vipUntilDate).format("MM/DD/YYYY") : "Нет" : "Нет"}\n\nВсего диалогов: ${user.totalDialogs}\nВсего сообщений: ${user.totalMessages}`, inline_keyboard: [[{text: profileEdit, callback_data: "edit"}], [{text: profileVip, callback_data: "vip"}]]});
+        return msg.reply({text: `🎭 Мой профиль\n\nПол: ${user.gender === "male" ? chooseGenderMale : chooseGenderFemale}\nВозраст: ${user.age}\nСтраны: ${user.country.join(", ")}\n${user.town ? `Город: ${user.town}` : ""}\n\nVIP: ${user.vip ? user.vipUnlimited ? "Да(навсегда)" : user.trialSearches !== 0 ? `${user.trialSearches} пробных вип поисков` : user.vipUntilDate ? moment(user.vipUntilDate).format("MM/DD/YYYY") : "Нет" : "Нет"}\n\nВсего диалогов: ${user.totalDialogs}\nВсего сообщений: ${user.totalMessages}`, inline_keyboard: [[{text: profileEdit, callback_data: "edit"}], [{text: profileVip, callback_data: "vip"}]]});
       }
+      if (msg.text === support) return msg.reply({text: `Помощь\nЕсли у тебя возник какой-либо вопрос, обращайся к <a href="https://t.me/example">администратору</a>.`, inline_keyboard: [[{text: `📩 Написать`, url: "https://t.me/example"}]]})
       if (msg.text === vipAccess || msg.text === "/vip") {
         if (user.vip) return msg.reply({text: `У вас уже есть VIP`});
         const settings = await DefaultSettings.findOne();
