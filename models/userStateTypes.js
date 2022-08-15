@@ -6,7 +6,7 @@ module.exports = {
     billId: {type: String},
     gender: {type: String},
     age: {type: [Number]},
-    country: {type: String},
+    country: {type: [String]},
     town: {type: String},
     user: {type: String},
     partner: {type: String}
