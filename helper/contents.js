@@ -159,6 +159,7 @@ module.exports = {
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "profile-page"});
         return msg.reply({text: `🎭 Мой профиль\n\nПол: ${user.gender === "male" ? chooseGenderMale : chooseGenderFemale}\nВозраст: ${user.age}\nСтраны: ${user.country.join(", ")}\n${user.town ? `Город: ${user.town}` : ""}\n\nVIP: ${user.vip ? user.vipUnlimited ? "Да(навсегда)" : user.trialSearches !== 0 ? `${user.trialSearches} пробных вип поисков` : user.vipUntilDate ? moment(user.vipUntilDate).format("MM/DD/YYYY") : "Нет" : "Нет"}\n\nВсего диалогов: ${user.totalDialogs}\nВсего сообщений: ${user.totalMessages}`, inline_keyboard: [[{text: profileEdit, callback_data: "edit"}], [{text: profileVip, callback_data: "vip"}]]});
       }
+      if (msg.text === support) return msg.reply({text: `Помощь\nЕсли у тебя возник какой-либо вопрос, обращайся к <a href="https://t.me/example">администратору</a>.`, inline_keyboard: [[{text: `📩 Написать`, url: "https://t.me/example"}]]})
       if (msg.text === vipAccess || msg.text === "/vip") {
         if (user.vip) return msg.reply({text: `У вас уже есть VIP`});
         const settings = await DefaultSettings.findOne();
