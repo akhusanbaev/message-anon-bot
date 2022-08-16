@@ -892,7 +892,7 @@ module.exports = {
       }
       if (msg.text === adminBannerFilter) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "banner-add-message-filter"});
-        return msg.reply({text: `Выбранные фильтры: \nПол: ${admin.state.filterGender ? admin.state.filterGender === "male" ? "Мужской" : "Женский" : "все"}\nВозраст: ${admin.state.filterAge.length ? `${admin.state.filterAge[0]}-${admin.state.filterAge[admin.state.filterAge.length - 1]}` : "все"}\nСтрана: ${admin.state.filterCountry ? admin.state.filterCountry : "все"}\nГород: ${admin.state.filterTown ? admin.state.filterTown : "все"}`, keyboard: [[adminStatisticsFilterGender], [adminStatisticsFilterAge], [adminStatisticsFilterCountry], [adminStatisticsFilterTown], [adminBannerDone], [adminCancelButton]]});
+        return msg.reply({text: `Выбранные фильтры: \nПол: ${admin.state.filterGender ? admin.state.filterGender === "male" ? "Мужской" : "Женский" : "все"}\nВозраст: ${admin.state.filterAge.length ? `${admin.state.filterAge[0]}-${admin.state.filterAge[admin.state.filterAge.length - 1]}` : "все"}\nСтрана: ${admin.state.filterCountry.length ? admin.state.filterCountry.join(", ") : "все"}\nГород: ${admin.state.filterTown.length ? admin.state.filterTown.join(", ") : "все"}`, keyboard: [[adminStatisticsFilterGender], [adminStatisticsFilterAge], [adminStatisticsFilterCountry], [adminStatisticsFilterTown], [adminBannerDone], [adminCancelButton]]});
       }
     } catch (e) {
       console.log(e);

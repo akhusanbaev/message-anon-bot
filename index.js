@@ -10,6 +10,7 @@ const {replyMessage, alertCallbackQuery, deleteCallbackQuery, editCallbackQuery}
 const Users = require("./models/Users");
 const Admins = require("./models/Admins");
 const Bills = require("./models/Bills");
+const Ads = require("./models/Ads");
 const ScheduledMails = require("./models/ScheduledMails");
 const Channels = require("./models/Channels");
 const {welcomeMessage, choosingGender, choosingAge, choosingTown, choosingCountry, homepage, profilePage,
@@ -273,6 +274,19 @@ bot.on("message", async msg => {
     if (user.state.on === "age") return choosingAge(msg, user);
     if (user.state.on === "country") return choosingCountry(msg, user);
     if (user.state.on === "town") return choosingTown(msg, user);
+    if (!user.vip) {
+      const ad = await Ads.findOne({seen: {$nin: [user._id.toString()]}, filter: {$exists: true, gender: {$exists: true, $in: [user.gender]}, age: {$exists: true, $in: [user.age]}, country: {$size: {$gte: 0}, $in: user.country}, town: {$size: {$gte: 0}, $in: [user.town]}}}).sort("seen");
+      if (!ad) {
+        const banner = await Ads.findOne();
+        if (banner) {
+          await msg.reply({telegramMessage: true, params: banner.mailMessage, chat_id: msg.chat.id});
+          await Ads.findOneAndUpdate({name: banner.name}, {$push: {seen: user._id.toString()}});
+        }
+      } else {
+        await msg.reply({telegramMessage: true, params: ad.mailMessage, chat_id: msg.chat.id});
+        await Ads.findOneAndUpdate({name: ad.name}, {$push: {seen: user._id.toString()}});
+      }
+    }
     if (user.state.on === "home") return homepage(msg, user);
     if (user.state.on === "search-random-partner") return randomPartnerPage(msg, user);
     if (user.state.on === "search-random-partner-restricted") return randomPartnerRestrictedPage(msg, user);
