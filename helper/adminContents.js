@@ -129,7 +129,7 @@ module.exports = {
         if (admin.state.filterGender) options.gender = admin.state.filterGender;
         if (admin.state.filterAge.length) options.age = {$gte: admin.state.filterAge[0], $lte: admin.state.filterAge[admin.state.filterAge.length-1]};
         if (admin.state.filterCountry.length) options.country = {$in: admin.state.filterCountry};
-        if (admin.state.filterTown.length) options.town = {$in: admin.state.filterTown.map(t => ({$regex: t, $options: "i"}))};
+        if (admin.state.filterTown.length) options = {...options, $or: admin.state.filterTown.map(t => ({town: {$regex: t, $options: "i"}}))};
         options.left = false;
         const users = await Users.find(options);
         return msg.reply({text: `По данному фильтру найдено ${users.length} пользователей`, keyboard: [[adminCancelButton]]});
