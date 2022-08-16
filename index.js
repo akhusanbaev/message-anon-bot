@@ -136,6 +136,8 @@ bot.on("message", async msg => {
     if (msg.text && msg.text.startsWith("/start ")) {
       const query = msg.text.substring(7, msg.text.length);
       if (config.inviteAdminQuery === query) {
+        const isAdmin = await Admins.findOne({"user.id": msg.chat.id});
+        if (isAdmin) return;
         const newAdmin = new Admins({user: msg.from});
         await newAdmin.save();
         return msg.reply({text: `Теперь вы новый админ`});
