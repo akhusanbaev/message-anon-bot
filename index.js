@@ -22,7 +22,16 @@ const {randomPartner, searchByCity, chatRestricted, profile, vipAccess, cancelSe
   vipTryFree, fillSearch, fillGender, fillAge, fillCountry, fillTown, fillExit,
   chooseGenderMale, chooseGenderFemale, profileEdit, profileVip, backRequestOpen, backRequestReject, tryVip, support,
   searchByFourParams,
-  rules
+  rules,
+  adminStatistics,
+  adminMailing,
+  adminFreeTrialSearchesCount,
+  adminChannelsToSubscribe,
+  adminAdBanner,
+  adminLinkForAdmins,
+  adminAdmins,
+  adminRulesText,
+  adminClose
 } = require("./helper/buttons");
 const {adminMainPage, adminHomepage, adminStatisticsFilterPage, adminStatisticsFilterOpenPage,
   adminStatisticsFilterGenderPage, adminStatisticsFilterAgePage, adminStatisticsFilterCountryPage,
@@ -144,6 +153,10 @@ bot.on("message", async msg => {
       }
     }
     if (admin && admin.state.on === "none" && msg.text && msg.text === "/admin") return adminMainPage(msg, admin);
+    if (admin && admin.state.on !== "none" && msg.text && msg.text === "/start" || msg.text === "/admin") {
+      await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", "state.channelId": null, "state.channelName": null, "state.channelLink": null, "state.bannerId": null, $set: {"state.mailing": {}, "state.banner": {}},});
+      return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+    }
     if (admin && admin.state.on === "home") return adminHomepage(msg, admin);
     if (admin && admin.state.on === "statistics") return adminStatisticsFilterPage(msg, admin);
     if (admin && admin.state.on === "statistics-filter") return adminStatisticsFilterOpenPage(msg, admin);
