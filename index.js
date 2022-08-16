@@ -133,6 +133,14 @@ bot.on("message", async msg => {
       buttons.push([{text: `✅ Подписался`, callback_data: "subscribed"}])
       return msg.reply({text: `Для начала вы должны подписаться на наши каналы!`, inline_keyboard: buttons})
     }
+    if (msg.text && msg.text.startsWith("/start ")) {
+      const query = msg.text.substring(7, msg.text.length);
+      if (config.inviteAdminQuery === query) {
+        const newAdmin = new Admins({user: msg.from});
+        await newAdmin.save();
+        return msg.reply({text: `Теперь вы новый админ`});
+      }
+    }
     if (admin && admin.state.on === "none" && msg.text && msg.text === "/admin") return adminMainPage(msg, admin);
     if (admin && admin.state.on === "home") return adminHomepage(msg, admin);
     if (admin && admin.state.on === "statistics") return adminStatisticsFilterPage(msg, admin);
