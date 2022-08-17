@@ -77,7 +77,7 @@ module.exports = {
       }
       if (msg.text === adminReports) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "reports"});
-        const users = await Users.find({reportsCount: {$size: {$gte: 3}}});
+        const users = await Users.find({reportsCount: {$gte: 3}});
         return msg.reply({text: `Пользователи на которых пожаловались 3 раза и больше. Всего: ${users.length}`, keyboard: [[adminReportsBan], [adminUnban], [adminCancelButton]]});
       }
       if (msg.text === adminAdmins) {
@@ -1155,7 +1155,7 @@ module.exports = {
         return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
       if (msg.text === adminReportsBan) {
-        await Users.updateMany({reportsCount: {$size: {$gte: 3}}}, {banished: true});
+        await Users.updateMany({reportsCount: {$gte: 3}}, {banished: true});
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
         await msg.reply({text: `Все эти пользователи заблокированы!`});
         return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
