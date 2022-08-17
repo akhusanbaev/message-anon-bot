@@ -104,6 +104,7 @@ module.exports = {
   adminVipEditForever: `Навсегда`,
 
   adminReportsBan: `Заблокировать всех`,
+  adminUnban: `Убрать бан`,
 
   adminCancelButton: `Назад`,
 }

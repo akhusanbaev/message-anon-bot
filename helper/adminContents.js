@@ -15,7 +15,7 @@ const {adminStatistics, adminMailing, adminFreeTrialSearchesCount, adminChannels
   adminMailingAllMessageStart, adminChannelsAddChannel, adminChannelsEditSubscriptions, adminChannelsEditDelete,
   adminBannerAdd, adminBannerSet, adminBannerFilter, adminBannerDone, adminBannerReady, adminAdminsDelete,
   adminBannerDelete, searchByFourParams, support, rules, adminRulesText, adminVipEdit, adminReports, adminVipEdit24h,
-  adminVipEdit7d, adminVipEdit1M, adminVipEditForever, adminReportsBan
+  adminVipEdit7d, adminVipEdit1M, adminVipEditForever, adminReportsBan, adminUnban
 } = require("./buttons");
 const {countriesData} = require("./countries");
 const {telegramBotLink, inviteAdminQuery} = require("./config");
@@ -78,7 +78,7 @@ module.exports = {
       if (msg.text === adminReports) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "reports"});
         const users = await Users.find({reportsCount: {$size: {$gte: 3}}});
-        return msg.reply({text: `Пользователи на которых пожаловались 3 раза и больше. Всего: ${users.length}`, keyboard: [[adminReportsBan], [adminCancelButton]]});
+        return msg.reply({text: `Пользователи на которых пожаловались 3 раза и больше. Всего: ${users.length}`, keyboard: [[adminReportsBan], [adminUnban], [adminCancelButton]]});
       }
       if (msg.text === adminAdmins) {
         if (!admin.boss) return msg.reply({text: `Данное меню доступно только для самого главного админа!`});
@@ -1160,6 +1160,20 @@ module.exports = {
         await msg.reply({text: `Все эти пользователи заблокированы!`});
         return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
+      if (msg.text === adminUnban) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "reports-unban"});
+        return msg.reply({text: `Введите ID пользователя у которого вы хотите убрать бан`});
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }, adminReportsUnbanPage: async (msg, admin) => {
+    try {
+      if (!msg.text) return;
+      if (!parseInt(msg.text)) return msg.reply({text: `Неверный формат!`});
+      await Users.findOneAndUpdate({"user.id": parseInt(msg.text)}, {banished: false});
+      await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
+      return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
     } catch (e) {
       console.log(e);
     }
