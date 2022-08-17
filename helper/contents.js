@@ -277,7 +277,7 @@ module.exports = {
     try {
       if (!msg.text) return unknownCommandValidator(msg);
       if (msg.text === cancelSearch) {
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "home",});
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "home"});
         return msg.reply({text: `⚡️Выбери действие:`, keyboard: [[randomPartner], [searchByCity, chatRestricted], [searchByFourParams], [profile, vipAccess], [support, rules]]});
       }
     } catch (e) {
