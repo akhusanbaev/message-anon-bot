@@ -21,17 +21,8 @@ const {welcomeMessage, choosingGender, choosingAge, choosingTown, choosingCountr
 const {randomPartner, searchByCity, chatRestricted, profile, vipAccess, cancelSearch, endDialog,
   vipTryFree, fillSearch, fillGender, fillAge, fillCountry, fillTown, fillExit,
   chooseGenderMale, chooseGenderFemale, profileEdit, profileVip, backRequestOpen, backRequestReject, tryVip, support,
-  searchByFourParams,
-  rules,
-  adminStatistics,
-  adminMailing,
-  adminFreeTrialSearchesCount,
-  adminChannelsToSubscribe,
-  adminAdBanner,
-  adminLinkForAdmins,
-  adminAdmins,
-  adminRulesText,
-  adminClose
+  searchByFourParams, rules, adminStatistics, adminMailing, adminFreeTrialSearchesCount, adminChannelsToSubscribe,
+  adminAdBanner, adminLinkForAdmins, adminAdmins, adminRulesText, adminClose, adminVipEdit, adminReports
 } = require("./helper/buttons");
 const {adminMainPage, adminHomepage, adminStatisticsFilterPage, adminStatisticsFilterOpenPage,
   adminStatisticsFilterGenderPage, adminStatisticsFilterAgePage, adminStatisticsFilterCountryPage,
@@ -44,7 +35,7 @@ const {adminMainPage, adminHomepage, adminStatisticsFilterPage, adminStatisticsF
   adminBannerAddMessageContinuePage, adminBannerAddNamePage, adminBannerAddMessageFilterPage,
   adminBannerAddMessageFilterGenderPage, adminBannerAddMessageFilterAgePage, adminBannerAddMessageFilterCountryPage,
   adminBannerAddMessageFilterTownPage, adminBannerAddMessageFilterContinuePage, adminAdminsPage, adminAdminsEditPage,
-  adminBannerEditPage, adminRulesPage
+  adminBannerEditPage, adminRulesPage, adminVipPricingPage, adminVipPricingEditPage
 } = require("./helper/adminContents");
 const Mailer = require("./helper/Mailer");
 const DefaultSettings = require("./models/DefaultSettings");
@@ -154,8 +145,8 @@ bot.on("message", async msg => {
     }
     if (admin && admin.state.on === "none" && msg.text && msg.text === "/admin") return adminMainPage(msg, admin);
     if (admin && admin.state.on !== "none" && msg.text && msg.text === "/start" || msg.text === "/admin") {
-      await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", "state.channelId": null, "state.channelName": null, "state.channelLink": null, "state.bannerId": null, $set: {"state.mailing": {}, "state.banner": {}},});
-      return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+      await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", "state.channelId": null, "state.channelName": null, "state.channelLink": null, "state.bannerId": null, $set: {"state.mailing": {}, "state.banner": {}}});
+      return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
     }
     if (admin && admin.state.on === "home") return adminHomepage(msg, admin);
     if (admin && admin.state.on === "statistics") return adminStatisticsFilterPage(msg, admin);
@@ -198,6 +189,8 @@ bot.on("message", async msg => {
     if (admin && admin.state.on === "admins") return adminAdminsPage(msg, admin);
     if (admin && admin.state.on === "admin-edit") return adminAdminsEditPage(msg, admin);
     if (admin && admin.state.on === "rules-text") return adminRulesPage(msg, admin);
+    if (admin && admin.state.on === "vip-pricing") return adminVipPricingPage(msg, admin);
+    if (admin && admin.state.on === "vip-pricing-edit") return adminVipPricingEditPage(msg, admin);
     await Users.findOneAndUpdate({"user.id": user.user.id}, {lastAction: moment().toDate()});
     if (user.left) await Users.findOneAndUpdate({"user.id": user.user.id}, {left: false, backDate: moment().toDate()});
     if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "back-request-read" && user.state.on !== "back-request-see-requests" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town" && msg.text) {
@@ -310,6 +303,7 @@ bot.on("message", async msg => {
         await Ads.findOneAndUpdate({name: ad.name}, {$push: {seen: user._id.toString()}});
       }
     }
+    if (user.banished) return msg.reply({text: `Вас забанили администраторы из-за нарушений. Если хотите снять бан обратитесь в администрацию...`});
     if (user.state.on === "home") return homepage(msg, user);
     if (user.state.on === "search-random-partner") return randomPartnerPage(msg, user);
     if (user.state.on === "search-random-partner-restricted") return randomPartnerRestrictedPage(msg, user);

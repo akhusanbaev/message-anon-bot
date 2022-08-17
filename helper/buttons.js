@@ -55,6 +55,8 @@ module.exports = {
   adminLinkForAdmins: `Ссылка для добавления админов`,
   adminAdmins: `Администраторы`,
   adminRulesText: `Текст правил`,
+  adminVipEdit: `Изменить цены на VIP`,
+  adminReports: `Репорты`,
   adminClose: `Закрыть`,
 
   adminStatisticsFilter: `Фильтр`,
@@ -95,6 +97,11 @@ module.exports = {
   adminChannelsAddChannel: `Доб. канал`,
   adminChannelsEditSubscriptions: `Изм. подписку`,
   adminChannelsEditDelete: `Удалить канал`,
+
+  adminVipEdit24h: `24 Часа`,
+  adminVipEdit7d: `7 Дней`,
+  adminVipEdit1M: `1 Месяц`,
+  adminVipEditForever: `Навсегда`,
 
   adminCancelButton: `Назад`,
 }

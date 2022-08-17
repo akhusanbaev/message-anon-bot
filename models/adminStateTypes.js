@@ -73,7 +73,8 @@ module.exports = {
     channelLink: {type: String},
     bannerId: {type: String},
     mailing: {type: AdminStateMailing},
-    banner: {type: AdminStateBanner}
+    banner: {type: AdminStateBanner},
+    plan: {type: String}
   }),
   AdminStateMailing,
   AdminStateBanner,

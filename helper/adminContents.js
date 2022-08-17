@@ -14,7 +14,8 @@ const {adminStatistics, adminMailing, adminFreeTrialSearchesCount, adminChannels
   adminMailingAddButtons, adminMailingContinue, adminMailingMessagePreview, adminMailingAllMessageSchedule,
   adminMailingAllMessageStart, adminChannelsAddChannel, adminChannelsEditSubscriptions, adminChannelsEditDelete,
   adminBannerAdd, adminBannerSet, adminBannerFilter, adminBannerDone, adminBannerReady, adminAdminsDelete,
-  adminBannerDelete, searchByFourParams, support, rules, adminRulesText
+  adminBannerDelete, searchByFourParams, support, rules, adminRulesText, adminVipEdit, adminReports, adminVipEdit24h,
+  adminVipEdit7d, adminVipEdit1M, adminVipEditForever
 } = require("./buttons");
 const {countriesData} = require("./countries");
 const {telegramBotLink, inviteAdminQuery} = require("./config");
@@ -23,7 +24,7 @@ module.exports = {
     try {
       await Users.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
-      return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+      return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
     } catch (e) {
       console.log(e);
     }
@@ -69,6 +70,11 @@ module.exports = {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "rules-text"});
         return msg.reply({text: `Пришлите текст правил`, keyboard: [[adminCancelButton]]});
       }
+      if (msg.text === adminVipEdit) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "vip-pricing"});
+        const settings = await DefaultSettings.findOne();
+        return msg.reply({text: `Цены на данный момент:\n24 Часа - ${settings.vipDailyPrice}р\n7 Дней - ${settings.vipWeeklyPrice}р\n1 Месяц - ${settings.vipMonthlyPrice}р\nНавсегда - ${settings.vipForeverPrice}р`, keyboard: [[adminVipEdit24h], [adminVipEdit7d], [adminVipEdit1M], [adminVipEditForever], [adminCancelButton]]});
+      }
       if (msg.text === adminAdmins) {
         if (!admin.boss) return msg.reply({text: `Данное меню доступно только для самого главного админа!`});
         const admins = await Admins.find({boss: false});
@@ -98,7 +104,7 @@ module.exports = {
       }
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
     } catch (e) {
       console.log(e);
@@ -136,7 +142,7 @@ module.exports = {
       }
       if (msg.text === adminStatisticsFilterExit) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
     } catch (e) {
       console.log(e);
@@ -253,7 +259,7 @@ module.exports = {
       }
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
     } catch (e) {
       console.log(e);
@@ -262,7 +268,7 @@ module.exports = {
     try {
       if (msg.text && msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
       const params = {};
       if (msg.text) {
@@ -447,7 +453,7 @@ module.exports = {
         new Mailer(userIds, msg, admin.state.mailing.mailMessage);
         await msg.reply({text: `Рассылка началась`});
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", $set: {"state.mailing": {}}});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
       if (msg.text === adminMailingAllMessageSchedule) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "mailing-all-message-continue-schedule"});
@@ -476,7 +482,7 @@ module.exports = {
       const newScheduledMail = new ScheduledMails({mailMessage: admin.state.mailing.mailMessage, startDate: moment(msg.text, "MM/DD/YYYY HH:mm").subtract(3, "hours").toDate(), userIds});
       await newScheduledMail.save();
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", $set: {"state.mailing": {}}});
-      return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+      return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
     } catch (e) {
       console.log(e);
     }
@@ -574,7 +580,7 @@ module.exports = {
       if (!msg.text) return;
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
       if (!parseInt(msg.text)) return msg.reply({text: `Должно быть целое число`});
       const settings = await DefaultSettings.findOne();
@@ -582,7 +588,7 @@ module.exports = {
       await settings.save()
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
       await msg.reply({text: `Теперь ${msg.text} количество пробных ВИП поисков`});
-      return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+      return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
     } catch (e) {
       console.log(e);
     }
@@ -591,7 +597,7 @@ module.exports = {
       if (!msg.text) return;
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
       if (msg.text === adminChannelsAddChannel) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "channels-add"});
@@ -664,7 +670,7 @@ module.exports = {
       if (!msg.text) return;
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", "state.channelId": null});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
       if (msg.text === adminChannelsEditSubscriptions) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "channels-edit"});
@@ -677,7 +683,7 @@ module.exports = {
         const channel = await Channels.findById(admin.state.channelId);
         await Channels.deleteOne({name: channel.name});
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", "state.channelId": null});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
     } catch (e) {
       console.log(e);
@@ -687,7 +693,7 @@ module.exports = {
       if (!msg.text) return;
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
       if (msg.text === adminBannerAdd) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "banner-add-name"});
@@ -704,13 +710,13 @@ module.exports = {
       if (!msg.text) return;
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
       if (msg.text === adminBannerDelete) {
         const ad = await Ads.findById(admin.state.bannerId);
         await Ads.deleteOne({name: ad.name});
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", "state.bannerId": null});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
     } catch (e) {
       console.log(e);
@@ -720,7 +726,7 @@ module.exports = {
       if (!msg.text) return;
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "banner-add", "state.banner.name": msg.text});
       return msg.reply({text: `Добавление баннера\nПришлите сообщение:`, keyboard: [[adminCancelButton]]});
@@ -731,7 +737,7 @@ module.exports = {
     try {
       if (msg.text && msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
       const params = {};
       if (msg.text) {
@@ -888,7 +894,7 @@ module.exports = {
         await newBanner.save();
         await msg.reply({text: `Баннер создан успешно!`});
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", $set: {"state.banner": {}}});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
       if (msg.text === adminBannerFilter) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "banner-add-message-filter"});
@@ -1036,7 +1042,7 @@ module.exports = {
         await newBanner.save();
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", $set: {"state.banner": {}}});
         await msg.reply({text: `Баннер создан успешно!`});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
     } catch (e) {
       console.log(e);
@@ -1046,7 +1052,7 @@ module.exports = {
       if (!msg.text) return;
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
       if (msg.text.split("///").length && msg.text.split("///").length === 2) {
         const a = await Admins.findOne({"user.id": parseInt(msg.text.split("///")[1])});
@@ -1081,13 +1087,58 @@ module.exports = {
       if (!msg.text) return;
       if (msg.text === adminCancelButton) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
-        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
       const settings = await DefaultSettings.findOne();
       settings.rulesText = msg.text;
       await settings.save();
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
-      return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminClose]]});
+      return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
+    } catch (e) {
+      console.log(e);
+    }
+  }, adminVipPricingPage: async (msg, admin) => {
+    try {
+      if (!msg.text) return;
+      if (msg.text === adminCancelButton) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
+      }
+      if (msg.text === adminVipEdit24h) await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "vip-pricing-edit", "state.plan": "24h"});
+      if (msg.text === adminVipEdit7d) await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "vip-pricing-edit", "state.plan": "7d"});
+      if (msg.text === adminVipEdit1M) await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "vip-pricing-edit", "state.plan": "1M"});
+      if (msg.text === adminVipEditForever) await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "vip-pricing-edit", "state.plan": "forever"});
+      return msg.reply({text: `Введите новую сумму:`, keyboard: [[adminCancelButton]]})
+    } catch (e) {
+      console.log(e);
+    }
+  }, adminVipPricingEditPage: async (msg, admin) => {
+    try {
+      if (!msg.text) return;
+      if (msg.text === adminCancelButton) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", "state.plan": null});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
+      }
+      if (!parseInt(msg.text)) return msg.reply({text: `Непонятно!`});
+      const settings = await DefaultSettings.findOne();
+      if (admin.state.plan === "24h") {
+        settings.vipDailyPrice = parseInt(msg.text);
+        await settings.save();
+      }
+      if (admin.state.plan === "7d") {
+        settings.vipWeeklyPrice = parseInt(msg.text);
+        await settings.save();
+      }
+      if (admin.state.plan === "1M") {
+        settings.vipMonthlyPrice = parseInt(msg.text);
+        await settings.save();
+      }
+      if (admin.state.plan === "forever") {
+        settings.vipForeverPrice = parseInt(msg.text);
+        await settings.save();
+      }
+      await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", "state.plan": null});
+      return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
     } catch (e) {
       console.log(e);
     }
