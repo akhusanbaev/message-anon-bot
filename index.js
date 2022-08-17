@@ -72,7 +72,7 @@ app.post("/invoices", async (req, res) => {
       if (user.state.plan === "1M") await Users.findOneAndUpdate({_id: user._id}, {vip: true, connectedVip: moment().toDate(), vipUntilDate: moment().add(1, "month").toDate(), "state.on": "home", "state.plan": null, "state.billId": null});
       if (user.state.plan === "forever") await Users.findOneAndUpdate({_id: user._id}, {vip: true, connectedVip: moment().toDate(), vipUnlimited: true, "state.on": "home", "state.plan": null, "state.billId": null});
       await bot.sendMessage(user.user.id, `Оплата произведена успешно!`);
-      return bot.sendMessage(user.user.id, `Выбери действие:`, {reply_markup: {resize_keyboard: true, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]}});
+      return bot.sendMessage(user.user.id, `⚡️Выбери действие:`, {reply_markup: {resize_keyboard: true, keyboard: [[randomPartner], [searchByCity, chatRestricted], [profile, vipAccess]]}});
     }
   } catch (e) {
     console.log(e);
