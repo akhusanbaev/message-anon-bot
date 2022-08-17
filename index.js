@@ -205,10 +205,10 @@ bot.on("message", async msg => {
     if (!user.vip && user.state !== "chat") {
       const ad = await Ads.findOne({seen: {$nin: [user._id.toString()]}, filter: {$exists: true}, "filter.gender": {$exists: true, $in: [user.gender]}, "filter.age": {$exists: true, $in: [user.age]}, "filter.country": {$exists: true, $in: user.country}, "filter.town": {$exists: true, $in: [user.town]}}).sort("seen");
       if (!ad) {
-        const banner = await Ads.findOne();
-        if (banner) {
-          await msg.reply({telegramMessage: true, params: banner.mailMessage, chat_id: msg.chat.id});
-          await Ads.findOneAndUpdate({name: banner.name}, {$push: {seen: user._id.toString()}});
+        const banner = await Ads.find().sort("seen");
+        if (banner.length) {
+          await msg.reply({telegramMessage: true, params: banner[0].mailMessage, chat_id: msg.chat.id});
+          await Ads.findOneAndUpdate({name: banner[0].name}, {$push: {seen: user._id.toString()}});
         }
       } else {
         await msg.reply({telegramMessage: true, params: ad.mailMessage, chat_id: msg.chat.id});
