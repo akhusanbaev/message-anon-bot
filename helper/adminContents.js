@@ -1162,7 +1162,7 @@ module.exports = {
       }
       if (msg.text === adminUnban) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "reports-unban"});
-        return msg.reply({text: `Введите ID пользователя у которого вы хотите убрать бан`});
+        return msg.reply({text: `Введите ID пользователя у которого вы хотите убрать бан`, keyboard: [[adminCancelButton]]});
       }
     } catch (e) {
       console.log(e);
@@ -1170,6 +1170,10 @@ module.exports = {
   }, adminReportsUnbanPage: async (msg, admin) => {
     try {
       if (!msg.text) return;
+      if (msg.text === adminCancelButton) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
+      }
       if (!parseInt(msg.text)) return msg.reply({text: `Неверный формат!`});
       await Users.findOneAndUpdate({"user.id": parseInt(msg.text)}, {banished: false});
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
