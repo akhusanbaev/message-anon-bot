@@ -291,7 +291,7 @@ bot.on("message", async msg => {
     if (user.state.on === "country") return choosingCountry(msg, user);
     if (user.state.on === "town") return choosingTown(msg, user);
     if (!user.vip && user.state !== "chat") {
-      const ad = await Ads.findOne({seen: {$nin: [user._id.toString()]}, filter: {$exists: true}, "filter.gender": {$exists: true, $in: [user.gender]}, "filter.age": {$exists: true, $in: [user.age]}, "filter.country": {$size: {$gte: 0}, $in: user.country}, "filter.town": {$size: {$gte: 0}, $in: [user.town]}}).sort("seen");
+      const ad = await Ads.findOne({seen: {$nin: [user._id.toString()]}, filter: {$exists: true}, "filter.gender": {$exists: true, $in: [user.gender]}, "filter.age": {$exists: true, $in: [user.age]}, "filter.country": {$exists: true, $in: user.country}, "filter.town": {$exists: true, $in: [user.town]}}).sort("seen");
       if (!ad) {
         const banner = await Ads.findOne();
         if (banner) {
