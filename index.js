@@ -197,6 +197,7 @@ bot.on("message", async msg => {
     await Users.findOneAndUpdate({"user.id": user.user.id}, {lastAction: moment().toDate()});
     if (user.left) await Users.findOneAndUpdate({"user.id": user.user.id}, {left: false, backDate: moment().toDate()});
     if (user.vip && user.trialSearches && user.trialSearches === 0 && !user.vipUntilDate && !user.vipUnlimited && user.state.on !== "chat" && user.state.on !== "ended-chat") {
+      console.log("DEBUGGING");
       user.vip = false;
       await Users.findOneAndUpdate({"user.id": user.user.id}, {vip: false});
     }
