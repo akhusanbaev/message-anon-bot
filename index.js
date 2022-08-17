@@ -202,6 +202,19 @@ bot.on("message", async msg => {
       await Users.findOneAndUpdate({"user.id": user.user.id}, {vip: false});
     }
     if (user.banished) return msg.reply({text: `Вас заблокировали администраторы из-за нарушений. Если хотите снять бан обратитесь в администрацию...`});
+    if (!user.vip && user.state !== "chat") {
+      const ad = await Ads.findOne({seen: {$nin: [user._id.toString()]}, filter: {$exists: true}, "filter.gender": {$exists: true, $in: [user.gender]}, "filter.age": {$exists: true, $in: [user.age]}, "filter.country": {$exists: true, $in: user.country}, "filter.town": {$exists: true, $in: [user.town]}}).sort("seen");
+      if (!ad) {
+        const banner = await Ads.findOne();
+        if (banner) {
+          await msg.reply({telegramMessage: true, params: banner.mailMessage, chat_id: msg.chat.id});
+          await Ads.findOneAndUpdate({name: banner.name}, {$push: {seen: user._id.toString()}});
+        }
+      } else {
+        await msg.reply({telegramMessage: true, params: ad.mailMessage, chat_id: msg.chat.id});
+        await Ads.findOneAndUpdate({name: ad.name}, {$push: {seen: user._id.toString()}});
+      }
+    }
     if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "back-request-read" && user.state.on !== "back-request-see-requests" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town" && msg.text) {
       if (user.backRequests.length) {
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request-read"});
@@ -299,20 +312,6 @@ bot.on("message", async msg => {
     if (user.state.on === "age") return choosingAge(msg, user);
     if (user.state.on === "country") return choosingCountry(msg, user);
     if (user.state.on === "town") return choosingTown(msg, user);
-    if (!user.vip && user.state !== "chat") {
-      console.log("DEBUGGER");
-      const ad = await Ads.findOne({seen: {$nin: [user._id.toString()]}, filter: {$exists: true}, "filter.gender": {$exists: true, $in: [user.gender]}, "filter.age": {$exists: true, $in: [user.age]}, "filter.country": {$exists: true, $in: user.country}, "filter.town": {$exists: true, $in: [user.town]}}).sort("seen");
-      if (!ad) {
-        const banner = await Ads.findOne();
-        if (banner) {
-          await msg.reply({telegramMessage: true, params: banner.mailMessage, chat_id: msg.chat.id});
-          await Ads.findOneAndUpdate({name: banner.name}, {$push: {seen: user._id.toString()}});
-        }
-      } else {
-        await msg.reply({telegramMessage: true, params: ad.mailMessage, chat_id: msg.chat.id});
-        await Ads.findOneAndUpdate({name: ad.name}, {$push: {seen: user._id.toString()}});
-      }
-    }
     if (user.banished) return msg.reply({text: `Вас заблокировали администраторы из-за нарушений. Если хотите снять бан обратитесь в администрацию...`});
     if (user.state.on === "home") return homepage(msg, user);
     if (user.state.on === "search-random-partner") return randomPartnerPage(msg, user);
