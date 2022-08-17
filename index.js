@@ -196,6 +196,7 @@ bot.on("message", async msg => {
     if (admin && admin.state.on === "reports-unban") return adminReportsUnbanPage(msg, admin);
     await Users.findOneAndUpdate({"user.id": user.user.id}, {lastAction: moment().toDate()});
     if (user.left) await Users.findOneAndUpdate({"user.id": user.user.id}, {left: false, backDate: moment().toDate()});
+    if (user.banished) return msg.reply({text: `Вас заблокировали администраторы из-за нарушений. Если хотите снять бан обратитесь в администрацию...`});
     if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "back-request-read" && user.state.on !== "back-request-see-requests" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town" && msg.text) {
       if (user.backRequests.length) {
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request-read"});
