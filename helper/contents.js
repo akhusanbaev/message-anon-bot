@@ -432,28 +432,28 @@ module.exports = {
     try {
       if (!msg.text) return unknownMessageHomepageValidator(msg);
       if (user.backRequests.length) {
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request-read"});
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request-read", lastVipAccess: false});
         return msg.reply({text: `У вас новые запросы на общение от ${user.backRequests.length!==1?"людей":"человека"}`, keyboard: [[backRequestOpen], [backRequestReject]]});
       }
       if (msg.text === "/report") {
         const partner = await Users.findById(user.state.partner);
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {reportsCount: partner.reportsCount+1});
         await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "home", "state.partner": null});
-        return msg.reply({text: `Жалоба отправлена. На рассмотрении модераторами`});
+        return msg.reply({text: `Жалоба отправлена. На рассмотрение модераторами`});
       }
       if (msg.text === "/back") {
         if (!user.vip && !user.lastVipAccess) return availableForVipOnlyValidator(msg);
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request"});
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "back-request", lastVipAccess: false});
         return msg.reply({text: `Введи текст запроса чтобы получатель понял, кто его оправил.\n\nПример:\nпривет, я Олег 22 года, случайно завершил диалог, давай продолжим?`, keyboard: [[backToMenu]]});
       }
       if (msg.text === "/next") {
         const searchResult = await Users.find({"state.on": "search-random-partner", "user.id": {$ne: user.user.id}, "state.gender": {$exists: true, $in: [user.gender]}, "state.age": {$exists: true, $in: [user.age]}, "state.country": {$exists: true, $in: user.country}, "state.town": {$exists: true, $in: [user.town]}}).sort("lastAction");
         const partner = searchResult.length?searchResult[0]:null;
         if (!partner) {
-          await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner"});
+          await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "search-random-partner", lastVipAccess: false});
           return msg.reply({text: `Ищем собеседника`, keyboard: [[cancelSearch]]});
         }
-        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString()});
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: partner._id.toString(), lastVipAccess: false});
         await Users.findOneAndUpdate({"user.id": partner.user.id}, {"state.on": "chat", partner: user._id.toString()});
         await msg.reply({chatId: user.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
         await msg.reply({chatId: partner.user.id, text: `Собеседник найден. Приятного общения. \n/stop - Закончить диалог\n/vip - Получить VIP`, keyboard: [[endDialog]]});
