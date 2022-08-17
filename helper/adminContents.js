@@ -1175,7 +1175,7 @@ module.exports = {
         return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
       }
       if (!parseInt(msg.text)) return msg.reply({text: `Неверный формат!`});
-      await Users.findOneAndUpdate({"user.id": parseInt(msg.text)}, {banished: false});
+      await Users.findOneAndUpdate({"user.id": parseInt(msg.text)}, {banished: false, reportsCount: 0});
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
       return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
     } catch (e) {
