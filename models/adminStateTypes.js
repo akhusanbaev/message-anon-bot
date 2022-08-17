@@ -74,7 +74,8 @@ module.exports = {
     bannerId: {type: String},
     mailing: {type: AdminStateMailing},
     banner: {type: AdminStateBanner},
-    plan: {type: String}
+    plan: {type: String},
+    link: {type: String}
   }),
   AdminStateMailing,
   AdminStateBanner,

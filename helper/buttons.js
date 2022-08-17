@@ -57,6 +57,7 @@ module.exports = {
   adminRulesText: `Текст правил`,
   adminVipEdit: `Изменить цены на VIP`,
   adminReports: `Репорты`,
+  adminLinks: `Ссылки`,
   adminClose: `Закрыть`,
 
   adminStatisticsFilter: `Фильтр`,
@@ -105,6 +106,9 @@ module.exports = {
 
   adminReportsBan: `Заблокировать всех`,
   adminUnban: `Убрать бан`,
+
+  adminLinksAdd: `Доб. ссылку`,
+  adminLinksDelete: `Удалить ссылку`,
 
   adminCancelButton: `Назад`,
 }

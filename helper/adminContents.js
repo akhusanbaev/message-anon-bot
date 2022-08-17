@@ -15,7 +15,8 @@ const {adminStatistics, adminMailing, adminFreeTrialSearchesCount, adminChannels
   adminMailingAllMessageStart, adminChannelsAddChannel, adminChannelsEditSubscriptions, adminChannelsEditDelete,
   adminBannerAdd, adminBannerSet, adminBannerFilter, adminBannerDone, adminBannerReady, adminAdminsDelete,
   adminBannerDelete, searchByFourParams, support, rules, adminRulesText, adminVipEdit, adminReports, adminVipEdit24h,
-  adminVipEdit7d, adminVipEdit1M, adminVipEditForever, adminReportsBan, adminUnban
+  adminVipEdit7d, adminVipEdit1M, adminVipEditForever, adminReportsBan, adminUnban, adminLinks, adminLinksAdd,
+  adminLinksDelete
 } = require("./buttons");
 const {countriesData} = require("./countries");
 const {telegramBotLink, inviteAdminQuery} = require("./config");
@@ -85,6 +86,11 @@ module.exports = {
         const admins = await Admins.find({boss: false});
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "admins"});
         return msg.reply({text: `Админы`, keyboard: [...admins.map(a => [`${a.user.first_name}///${a.user.id}`]), [adminCancelButton]]});
+      }
+      if (msg.text === adminLinks) {
+        const settings = await DefaultSettings.findOne();
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "links"});
+        return msg.reply({text: `Ссылки`, keyboard: [...settings.links.map(l => [l]), [adminLinksAdd], [adminCancelButton]]});
       }
       if (msg.text.startsWith("/vip ")) {
         const settings = await DefaultSettings.findOne();
@@ -1178,6 +1184,52 @@ module.exports = {
       await Users.findOneAndUpdate({"user.id": parseInt(msg.text)}, {banished: false, reportsCount: 0});
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
       return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
+    } catch (e) {
+      console.log(e);
+    }
+  }, adminLinksPage: async (msg, admin) => {
+    try {
+      if (!msg.text) return;
+      if (msg.text === adminCancelButton) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
+      }
+      if (msg.text === adminLinksAdd) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "links-add"});
+        return msg.reply({text: `Напишите в виде текста(без пробелов) название, оно и будет DEEP LINK. Т.е. bot?start={DEEPLINK}`});
+      }
+      await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "links-edit", "state.link": msg.text});
+      const users = await Users.find({startQuery: msg.text});
+      return msg.reply({text: `Ссылка ${msg.text}. По этой ссылке зарегистрировались ${users.length} пользователей`, keyboard: [[adminLinksDelete], [adminCancelButton]]});
+    } catch (e) {
+      console.log(e);
+    }
+  }, adminLinksAddPage: async (msg, admin) => {
+    try {
+      if (!msg.text) return;
+      const settings = await DefaultSettings.findOne();
+      if (settings.links.includes(msg.text)) return msg.reply({text: `Такая ссылка уже существует`});
+      settings.links = [...settings.links, msg.text];
+      await settings.save();
+      await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
+      return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
+    } catch (e) {
+      console.log(e);
+    }
+  }, adminLinksEditPage: async (msg, admin) => {
+    try {
+      if (!msg.text) return;
+      const settings = await DefaultSettings.findOne();
+      if (msg.text === adminCancelButton) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", "state.link": null});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
+      }
+      if (msg.text === adminLinksDelete) {
+        settings.links.splice(settings.links.findIndex(b => b===admin.state.link), 1);
+        await settings.save();
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", "state.link": null});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
+      }
     } catch (e) {
       console.log(e);
     }

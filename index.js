@@ -36,7 +36,7 @@ const {adminMainPage, adminHomepage, adminStatisticsFilterPage, adminStatisticsF
   adminBannerAddMessageFilterGenderPage, adminBannerAddMessageFilterAgePage, adminBannerAddMessageFilterCountryPage,
   adminBannerAddMessageFilterTownPage, adminBannerAddMessageFilterContinuePage, adminAdminsPage, adminAdminsEditPage,
   adminBannerEditPage, adminRulesPage, adminVipPricingPage, adminVipPricingEditPage, adminReportsPage,
-  adminReportsUnbanPage
+  adminReportsUnbanPage, adminLinksPage, adminLinksAddPage, adminLinksEditPage
 } = require("./helper/adminContents");
 const Mailer = require("./helper/Mailer");
 const DefaultSettings = require("./models/DefaultSettings");
@@ -194,6 +194,9 @@ bot.on("message", async msg => {
     if (admin && admin.state.on === "vip-pricing-edit") return adminVipPricingEditPage(msg, admin);
     if (admin && admin.state.on === "reports") return adminReportsPage(msg, admin);
     if (admin && admin.state.on === "reports-unban") return adminReportsUnbanPage(msg, admin);
+    if (admin && admin.state.on === "links") return adminLinksPage(msg, admin);
+    if (admin && admin.state.on === "links-add") return adminLinksAddPage(msg, admin);
+    if (admin && admin.state.on === "links-edit") return ;adminLinksEditPage(msg, admin);
     await Users.findOneAndUpdate({"user.id": user.user.id}, {lastAction: moment().toDate()});
     if (user.left) await Users.findOneAndUpdate({"user.id": user.user.id}, {left: false, backDate: moment().toDate()});
     if (user.vip && user.trialSearches === 0 && !user.vipUntilDate && !user.vipUnlimited && user.state.on !== "chat" && user.state.on !== "ended-chat") {

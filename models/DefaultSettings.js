@@ -6,6 +6,7 @@ const DefaultSettingsSchema = new Schema({
   vipMonthlyPrice: {type: Number},
   vipForeverPrice: {type: Number},
   isMailing: {type: Boolean},
-  rulesText: {type: String}
+  rulesText: {type: String},
+  links: {type: [String]}
 });
 module.exports = model("default-settings", DefaultSettingsSchema);
