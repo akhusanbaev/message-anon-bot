@@ -5,7 +5,7 @@ class Mailer {
     this.userIds = userIds;
     this.msg = msg;
     this.mailMessage = mailMessage;
-    this.mail().then(res => res).catch(err => {console.log(err)});
+    this.mail().catch(err => {console.log(err)});
   }
   mail = async () => {
     try {

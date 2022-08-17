@@ -454,7 +454,7 @@ module.exports = {
       if (msg.text === adminMailingAllMessageStart) {
         let userIds = []
         const users = await Users.find({left: false, ...admin.state.mailing.filter});
-        for (let i = 0; i < users.length; i++) {userIds = [...userIds, users[i]._id.toString()];}
+        for (let i = 0; i < users.length; i++) {userIds = [...userIds, users[i].user.id];}
         new Mailer(userIds, msg, admin.state.mailing.mailMessage);
         await msg.reply({text: `Рассылка началась`});
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", $set: {"state.mailing": {}}});
