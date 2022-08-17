@@ -15,7 +15,7 @@ const {adminStatistics, adminMailing, adminFreeTrialSearchesCount, adminChannels
   adminMailingAllMessageStart, adminChannelsAddChannel, adminChannelsEditSubscriptions, adminChannelsEditDelete,
   adminBannerAdd, adminBannerSet, adminBannerFilter, adminBannerDone, adminBannerReady, adminAdminsDelete,
   adminBannerDelete, searchByFourParams, support, rules, adminRulesText, adminVipEdit, adminReports, adminVipEdit24h,
-  adminVipEdit7d, adminVipEdit1M, adminVipEditForever
+  adminVipEdit7d, adminVipEdit1M, adminVipEditForever, adminReportsBan
 } = require("./buttons");
 const {countriesData} = require("./countries");
 const {telegramBotLink, inviteAdminQuery} = require("./config");
@@ -74,6 +74,11 @@ module.exports = {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "vip-pricing"});
         const settings = await DefaultSettings.findOne();
         return msg.reply({text: `Цены на данный момент:\n24 Часа - ${settings.vipDailyPrice}р\n7 Дней - ${settings.vipWeeklyPrice}р\n1 Месяц - ${settings.vipMonthlyPrice}р\nНавсегда - ${settings.vipForeverPrice}р`, keyboard: [[adminVipEdit24h], [adminVipEdit7d], [adminVipEdit1M], [adminVipEditForever], [adminCancelButton]]});
+      }
+      if (msg.text === adminReports) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "reports"});
+        const users = await Users.find({reportsCount: {$size: {$gte: 3}}});
+        return msg.reply({text: `Пользователи на которых пожаловались 3 раза и больше. Всего: ${users.length}`, keyboard: [[adminReportsBan], [adminCancelButton]]});
       }
       if (msg.text === adminAdmins) {
         if (!admin.boss) return msg.reply({text: `Данное меню доступно только для самого главного админа!`});
@@ -1139,6 +1144,22 @@ module.exports = {
       }
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", "state.plan": null});
       return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
+    } catch (e) {
+      console.log(e);
+    }
+  }, adminReportsPage: async (msg, admin) => {
+    try {
+      if (!msg.text) return;
+      if (msg.text === adminCancelButton) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
+      }
+      if (msg.text === adminReportsBan) {
+        await Users.updateMany({reportsCount: {$size: {$gte: 3}}}, {banished: true});
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
+        await msg.reply({text: `Все эти пользователи заблокированы!`});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminClose]]});
+      }
     } catch (e) {
       console.log(e);
     }

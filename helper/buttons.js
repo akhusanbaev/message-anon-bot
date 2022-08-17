@@ -103,5 +103,7 @@ module.exports = {
   adminVipEdit1M: `1 Месяц`,
   adminVipEditForever: `Навсегда`,
 
+  adminReportsBan: `Заблокировать всех`,
+
   adminCancelButton: `Назад`,
 }
