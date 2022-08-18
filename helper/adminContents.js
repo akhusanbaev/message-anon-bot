@@ -1196,7 +1196,7 @@ module.exports = {
       }
       if (msg.text === adminLinksAdd) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "links-add"});
-        return msg.reply({text: `Напишите в виде текста(без пробелов) название, оно и будет DEEP LINK. Т.е. bot?start={DEEPLINK}`});
+        return msg.reply({text: `Напишите в виде текста(без пробелов) название, оно и будет DEEPLINK. Т.е. bot?start={DEEPLINK}`, keyboard: [[adminCancelButton]]});
       }
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "links-edit", "state.link": msg.text});
       const users = await Users.find({startQuery: msg.text});
@@ -1207,6 +1207,10 @@ module.exports = {
   }, adminLinksAddPage: async (msg, admin) => {
     try {
       if (!msg.text) return;
+      if (msg.text === adminCancelButton) {
+        await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home"});
+        return msg.reply({text: `Админ панель`, keyboard: [[adminStatistics], [adminMailing], [adminFreeTrialSearchesCount], [adminChannelsToSubscribe], [adminAdBanner], [adminLinkForAdmins], [adminAdmins], [adminRulesText], [adminVipEdit], [adminReports], [adminLinks], [adminClose]]});
+      }
       const settings = await DefaultSettings.findOne();
       if (settings.links.includes(msg.text)) return msg.reply({text: `Такая ссылка уже существует`});
       settings.links = [...settings.links, msg.text];

@@ -72,6 +72,7 @@ module.exports = {
     channelName: {type: String},
     channelLink: {type: String},
     bannerId: {type: String},
+    adminId: {type: String},
     mailing: {type: AdminStateMailing},
     banner: {type: AdminStateBanner},
     plan: {type: String},
