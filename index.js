@@ -207,13 +207,17 @@ bot.on("message", async msg => {
     if (!user.vip && user.state.on !== "chat" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town") {
       const ads = await Ads.find().sort("seen");
       if (ads.length) {
+        let found = false
         for (let i = 0; i < ads.length; i++) {
           const ad = ads[i];
           if (ad.filter.gender && ad.filter.age.length && ad.filter.town.length && ad.filter.gender === user.gender && ad.filter.age.includes(user.age) && ad.filter.town.includes(user.town) && ad.filter.country.filter(elem => user.country.includes(elem))) {
+            found = true;
             await Ads.findOneAndUpdate({name: ad.name}, {$push: {seen: user._id.toString()}});
             await msg.reply({telegramMessage: true, params: ad.mailMessage, chat_id: msg.chat.id});
             break;
           }
+        }
+        if (!found) {
           const anyAd = await Ads.find().sort("seen");
           if (anyAd.length) {
             await Ads.findOneAndUpdate({name: anyAd[0].name}, {$push: {seen: user._id.toString()}});
