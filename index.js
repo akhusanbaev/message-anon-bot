@@ -211,7 +211,7 @@ bot.on("message", async msg => {
         await msg.reply({telegramMessage: true, params: ads[0].mailMessage, chat_id: msg.chat.id});
       } else {
         const anyAd = await Ads.find().sort("seen");
-        if (adnyAd.length) {
+        if (anyAd.length) {
           await Ads.findOneAndUpdate({name: anyAd[0].name}, {$push: {seen: user._id.toString()}});
           await msg.reply({telegramMessage: true, params: anyAd[0].mailMessage, chat_id: msg.chat.id});
         }
