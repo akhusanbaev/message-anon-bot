@@ -205,16 +205,16 @@ bot.on("message", async msg => {
     }
     if (user.banished) return msg.reply({text: `Вас заблокировали администраторы из-за нарушений. Если хотите снять бан обратитесь в администрацию...`});
     if (!user.vip && user.state.on !== "chat") {
-      const ad = await Ads.findOne({seen: {$nin: [user._id.toString()]}, filter: {$exists: true}, "filter.gender": {$exists: true, $in: [user.gender]}, "filter.age": {$exists: true, $in: [user.age]}, "filter.country": {$exists: true, $in: user.country}, "filter.town": {$exists: true, $in: [user.town]}}).sort("seen");
-      if (!ad) {
-        const banner = await Ads.find().sort("seen");
-        if (banner.length) {
-          await msg.reply({telegramMessage: true, params: banner[0].mailMessage, chat_id: msg.chat.id});
-          await Ads.findOneAndUpdate({name: banner[0].name}, {$push: {seen: user._id.toString()}});
-        }
+      const ads = await Ads.find({filter: {$exists: true}, "filter.gender": {$exists: true, $in: [user.gender]}, "filter.age": {$exists: true, $in: [user.age]}, "filter.country": {$exists: true, $in: user.country}, "filter.town": {$exists: true, $in: [user.town]}}).sort("seen");
+      if (ads.length) {
+        await Ads.findOneAndUpdate({name: ads[0].name}, {$push: {seen: user._id.toString()}});
+        await msg.reply({telegramMessage: true, params: ads[0].mailMessage, chat_id: msg.chat.id});
       } else {
-        await msg.reply({telegramMessage: true, params: ad.mailMessage, chat_id: msg.chat.id});
-        await Ads.findOneAndUpdate({name: ad.name}, {$push: {seen: user._id.toString()}});
+        const anyAd = await Ads.find().sort("seen");
+        if (adnyAd.length) {
+          await Ads.findOneAndUpdate({name: anyAd[0].name}, {$push: {seen: user._id.toString()}});
+          await msg.reply({telegramMessage: true, params: anyAd[0].mailMessage, chat_id: msg.chat.id});
+        }
       }
     }
     if (user.state.on !== "chat" && user.state.on !== "back-request" && user.state.on !== "back-request-read" && user.state.on !== "back-request-see-requests" && user.state.on !== "search-filter-partner-fill-town" && user.state.on !== "search-filter-partner-fill-country" && user.state.on !== "search-filter-partner-fill-age" && user.state.on !== "search-filter-partner-fill-gender" && user.state.on !== "search-filter-partner" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town" && msg.text) {
