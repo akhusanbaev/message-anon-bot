@@ -95,6 +95,11 @@ module.exports = {
         return msg.reply({text: `У вас новые запросы на общение от ${user.backRequests.length!==1?"людей":"человека"}`, keyboard: [[backRequestOpen], [backRequestReject]]});
       }
       if (msg.text === randomPartner) {
+        await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.gender": null, $set: {"state.age": [], "state.country": []}, "state.town": null});
+        user.state.age = [];
+        user.state.country = [];
+        user.state.gender = null;
+        user.state.town = null;
         const firstSearchTry = await Users.findOne({"state.on": "search-random-partner-restricted", gender: {$ne: user.gender}});
         if (firstSearchTry) {
           await Users.findOneAndUpdate({"user.id": user.user.id}, {"state.on": "chat", partner: firstSearchTry._id.toString(), totalDialogs: user.totalDialogs+1});
