@@ -686,8 +686,8 @@ module.exports = {
       if (msg.text === adminChannelsEditSubscriptions) {
         await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "channels-edit"});
         const channel = await Channels.findById(admin.state.channelId);
-        await Channels.findOneAndUpdate({name: channel.name}, {subscription: !!channel.subscription});
-        channel.subscription = !!channel.subscription;
+        await Channels.findOneAndUpdate({name: channel.name}, {subscription: !channel.subscription});
+        channel.subscription = !channel.subscription;
         return msg.reply({text: `Канал: ${channel.name}. Пользователи ${channel.subscription?"должны":"могут и не"} подписываться`, keyboard: [[adminChannelsEditSubscriptions], [adminCancelButton]]});
       }
       if (msg.text === adminChannelsEditDelete) {
