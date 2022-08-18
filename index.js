@@ -204,8 +204,8 @@ bot.on("message", async msg => {
       await Users.findOneAndUpdate({"user.id": user.user.id}, {vip: false});
     }
     if (user.banished) return msg.reply({text: `Вас заблокировали администраторы из-за нарушений. Если хотите снять бан обратитесь в администрацию...`});
-    if (!user.vip && user.state.on !== "chat") {
-      const ads = await Ads.find({filter: {$exists: true}, "filter.gender": {$exists: true, $in: [user.gender]}, "filter.age": {$exists: true, $in: [user.age]}, "filter.country": {$exists: true, $in: user.country}, "filter.town": {$exists: true, $in: [user.town]}}).sort("seen");
+    if (!user.vip && user.state.on !== "chat" && user.state.on !== "gender" && user.state.on !== "age" && user.state.on !== "country" && user.state.on !== "town") {
+      const ads = await Ads.find({"filter.gender": {$exists: true, $in: [user.gender]}, "filter.age": {$size: {$gte: 1}, $in: [user.age]}, "filter.country": {$size: {$gte: 1}, $in: user.country}, "filter.town": {$size: {$gte: 1}, $in: [user.town]}}).sort("seen");
       if (ads.length) {
         await Ads.findOneAndUpdate({name: ads[0].name}, {$push: {seen: user._id.toString()}});
         await msg.reply({telegramMessage: true, params: ads[0].mailMessage, chat_id: msg.chat.id});
