@@ -204,7 +204,7 @@ bot.on("message", async msg => {
       await Users.findOneAndUpdate({"user.id": user.user.id}, {vip: false});
     }
     if (user.banished) return msg.reply({text: `Вас заблокировали администраторы из-за нарушений. Если хотите снять бан обратитесь в администрацию...`});
-    if (!user.vip && user.state !== "chat") {
+    if (!user.vip && user.state.on !== "chat") {
       const ad = await Ads.findOne({seen: {$nin: [user._id.toString()]}, filter: {$exists: true}, "filter.gender": {$exists: true, $in: [user.gender]}, "filter.age": {$exists: true, $in: [user.age]}, "filter.country": {$exists: true, $in: user.country}, "filter.town": {$exists: true, $in: [user.town]}}).sort("seen");
       if (!ad) {
         const banner = await Ads.find().sort("seen");
