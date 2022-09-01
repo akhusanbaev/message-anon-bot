@@ -1,11 +1,15 @@
+require("dotenv").config();
 const express = require("express");
+const https = require("https");
 const {connect} = require("mongoose");
+const path = require("path");
 const moment = require("moment");
+const fs = require("fs");
+
 const TelegramBotApi = require("node-telegram-bot-api");
+
 const QiwiBillPaymentsAPI = require('@qiwi/bill-payments-node-js-sdk');
-
 const config = require("./helper/config");
-
 const {replyMessage, alertCallbackQuery, deleteCallbackQuery, editCallbackQuery} = require("./helper/botFunctions");
 const Users = require("./models/Users");
 const Admins = require("./models/Admins");
@@ -42,6 +46,12 @@ const Mailer = require("./helper/Mailer");
 const DefaultSettings = require("./models/DefaultSettings");
 
 const app = express();
+
+https.createServer({
+  key: fs.readFileSync(path.join(__dirname, "ssl", "privateKey.crt")),
+  cert: fs.readFileSync(path.join(__dirname, "ssl", "certificate.crt"))
+}, app).listen(config.port, () => {console.log("Server is running!")})
+
 const bot = new TelegramBotApi(config.telegramBotToken);
 const qiwiApi = new QiwiBillPaymentsAPI(config.qApiPrivateKey);
 
@@ -401,9 +411,6 @@ async function start() {
   try {
     await connect(config.mongoUri);
     await bot.setWebHook(`${config.serverUrl}/bot${config.telegramBotToken}`);
-    app.listen(config.port, () => {
-      console.log("Started...");
-    })
   } catch (e) {
     console.log(e);
   }
