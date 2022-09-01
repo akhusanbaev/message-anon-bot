@@ -1,10 +1,7 @@
 require("dotenv").config();
 const express = require("express");
-const https = require("https");
 const {connect} = require("mongoose");
-const path = require("path");
 const moment = require("moment");
-const fs = require("fs");
 
 const TelegramBotApi = require("node-telegram-bot-api");
 
@@ -406,10 +403,7 @@ async function start() {
   try {
     await connect(config.mongoUri);
     await bot.setWebHook(`${config.serverUrl}/bot${config.telegramBotToken}`);
-    https.createServer({
-      key: fs.readFileSync(path.join(__dirname, "ssl", "privateKey.crt")),
-      cert: fs.readFileSync(path.join(__dirname, "ssl", "certificate.crt"))
-    }, app).listen(config.port, () => {console.log("Server is running!")});
+    app.listen(config.port);
   } catch (e) {
     console.log(e);
   }
