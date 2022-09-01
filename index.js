@@ -403,7 +403,7 @@ async function start() {
   try {
     await connect(config.mongoUri);
     await bot.setWebHook(`${config.serverUrl}/bot${config.telegramBotToken}`);
-    app.listen(config.port);
+    app.listen(config.port, () => {console.log("Server started!")});
   } catch (e) {
     console.log(e);
   }
