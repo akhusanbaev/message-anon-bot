@@ -47,11 +47,6 @@ const DefaultSettings = require("./models/DefaultSettings");
 
 const app = express();
 
-https.createServer({
-  key: fs.readFileSync(path.join(__dirname, "ssl", "privateKey.crt")),
-  cert: fs.readFileSync(path.join(__dirname, "ssl", "certificate.crt"))
-}, app).listen(config.port, () => {console.log("Server is running!")})
-
 const bot = new TelegramBotApi(config.telegramBotToken);
 const qiwiApi = new QiwiBillPaymentsAPI(config.qApiPrivateKey);
 
@@ -411,6 +406,10 @@ async function start() {
   try {
     await connect(config.mongoUri);
     await bot.setWebHook(`${config.serverUrl}/bot${config.telegramBotToken}`);
+    https.createServer({
+      key: fs.readFileSync(path.join(__dirname, "ssl", "privateKey.crt")),
+      cert: fs.readFileSync(path.join(__dirname, "ssl", "certificate.crt"))
+    }, app).listen(config.port, () => {console.log("Server is running!")});
   } catch (e) {
     console.log(e);
   }
